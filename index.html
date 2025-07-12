@@ -388,6 +388,7 @@
             border-radius: 10px;
             width: 350px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
         }
 
         #auth-form input {
@@ -398,8 +399,13 @@
             border-radius: 5px;
         }
 
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
         #auth-form button {
-            width: 100%;
+            flex: 1;
             padding: 12px;
             border: none;
             border-radius: 5px;
@@ -408,6 +414,18 @@
             font-size: 16px;
             cursor: pointer;
         }
+        
+        #auth-form button#signup-button {
+            background-color: #075E54;
+        }
+
+        #auth-feedback {
+            margin-top: 15px;
+            color: red;
+            font-size: 14px;
+            height: 20px;
+        }
+
 
         #main-app {
             display: none; /* Hidden until logged in */
@@ -422,9 +440,13 @@
     <div id="auth-screen">
         <h1>ChatBox By Nabila Ahmad Studio</h1>
         <div id="auth-form">
-            <input type="email" id="email-input" placeholder="Email">
-            <input type="password" id="password-input" placeholder="Password">
-            <button id="login-button">Login / Sign Up</button>
+            <input type="email" id="email-input" placeholder="Email" required>
+            <input type="password" id="password-input" placeholder="Password" required>
+            <div class="auth-buttons">
+                <button id="login-button">Login</button>
+                <button id="signup-button">Sign Up</button>
+            </div>
+            <div id="auth-feedback"></div>
         </div>
     </div>
 
@@ -502,8 +524,8 @@
     
     <script>
         // --- KONFIGURASI SUPABASE ---
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Ganti dengan URL Supabase Anda
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Ganti dengan Anon Key Anda
+        const SUPABASE_URL = 'Yhttps://exjeedwqdcjhtkczxpor.supabase.co'; // Ganti dengan URL Supabase Anda
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4amVlZHdxZGNqaHRrY3p4cG9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTkyNzQzMDgsImV4cCI6MjAzNDg1MDMwOH0.2i6m09wA5jD5pT3E2xG3EZrMei3VwR_B319q2Jz3jmM'; // Ganti dengan Anon Key Anda
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- ASET ITEM/EMO ---
@@ -547,7 +569,9 @@
         const authScreen = document.getElementById('auth-screen');
         const mainApp = document.getElementById('main-app');
         const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
         const logoutButton = document.getElementById('logout-button');
+        const authFeedback = document.getElementById('auth-feedback');
         const messageContainer = document.getElementById('message-container');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
@@ -567,25 +591,24 @@
         // Memeriksa sesi login saat halaman dimuat
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await sb.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                await setupApp();
-            } else {
-                showAuthScreen();
-            }
+            handleAuth(session);
             
             // Listener untuk perubahan status auth (login/logout)
             sb.auth.onAuthStateChange(async (_event, session) => {
-                if (session) {
-                    currentUser = session.user;
-                    await setupApp();
-                } else {
-                    currentUser = null;
-                    showAuthScreen();
-                }
+                handleAuth(session);
             });
         });
         
+        function handleAuth(session) {
+            if (session) {
+                currentUser = session.user;
+                setupApp();
+            } else {
+                currentUser = null;
+                showAuthScreen();
+            }
+        }
+
         async function setupApp() {
             authScreen.style.display = 'none';
             mainApp.style.display = 'flex';
@@ -598,7 +621,12 @@
             mainApp.style.display = 'none';
             authScreen.style.display = 'flex';
         }
-        
+
+        function setAuthFeedback(message, isError = true) {
+            authFeedback.textContent = message;
+            authFeedback.style.color = isError ? 'red' : 'green';
+        }
+
         async function loadUserProfile() {
             if (!currentUser) return;
             
@@ -610,8 +638,8 @@
                 const avatarUrl = data.avatar_url ? getPublicUrl('avatars', data.avatar_url) : 'https://img.icons8.com/material/96/user-male-circle.png';
                 document.getElementById('sidebar-avatar').src = avatarUrl;
                 document.getElementById('profile-modal-avatar').src = avatarUrl;
-            } else if (error && error.details.includes("0 rows")) {
-                // Buat profil jika belum ada
+            } else if (error && error.code === 'PGRST116') {
+                // Buat profil jika belum ada (PGRST116: 0 rows returned)
                 const { error: insertError } = await sb.from('profiles').insert({ id: currentUser.id, username: 'New User' });
                 if (!insertError) await loadUserProfile();
             }
@@ -775,24 +803,34 @@
 
         // --- Event Listeners ---
         loginButton.addEventListener('click', async () => {
+            setAuthFeedback('');
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('password-input').value;
             
-            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            const { error } = await sb.auth.signInWithPassword({ email, password });
+            
             if (error) {
-                 // Jika error karena user tidak ada, coba sign up
-                if (error.message.includes("Invalid login credentials")) {
-                    const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password });
-                    if (signUpError) {
-                         alert(signUpError.message);
-                    } else {
-                         alert('Akun berhasil dibuat! Silakan cek email untuk verifikasi dan login kembali.');
-                    }
-                } else {
-                    alert(error.message);
-                }
+                setAuthFeedback(error.message);
+            }
+            // onAuthStateChange akan menangani sisanya
+        });
+        
+        signupButton.addEventListener('click', async () => {
+            setAuthFeedback('');
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
+
+            const { data, error } = await sb.auth.signUp({ email, password });
+
+            if (error) {
+                setAuthFeedback(error.message);
+            } else if (data.user && data.user.identities && data.user.identities.length === 0) {
+                 setAuthFeedback("Pengguna dengan email ini sudah ada.", true);
+            } else if (data.user) {
+                setAuthFeedback('Akun berhasil dibuat! Silakan cek email untuk verifikasi.', false);
             }
         });
+
 
         logoutButton.addEventListener('click', () => {
             sb.auth.signOut();
