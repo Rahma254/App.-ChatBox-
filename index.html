@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatBox By Nabila Ahmad Studio Development</title>
+    <title>ChatBox By Nabila Ahmad Studio Development - v2.0</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -17,6 +17,7 @@
             --dark-text: #333;
             --chat-bubble-bg: #DCF8C6;
             --border-color: #E0E0E0;
+            --highlight-bg: #f5f592;
         }
 
         body {
@@ -70,6 +71,7 @@
             height: 45px;
             border-radius: 50%;
             margin-right: 15px;
+            object-fit: cover;
         }
 
         .sidebar-header .toolbar button {
@@ -86,18 +88,25 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .search-container input {
+        #search-chat-input {
             width: 100%;
-            padding: 10px;
+            padding: 10px 15px;
             border: 1px solid #ddd;
             border-radius: 20px;
             background-color: var(--light-gray);
             font-size: 14px;
+            box-sizing: border-box;
         }
 
         .chat-list {
             flex-grow: 1;
             overflow-y: auto;
+        }
+        
+        .chat-list-feedback {
+            text-align: center;
+            padding: 20px;
+            color: #888;
         }
 
         .chat-item {
@@ -118,10 +127,12 @@
             height: 50px;
             border-radius: 50%;
             margin-right: 15px;
+            object-fit: cover;
         }
 
         .chat-details {
             flex-grow: 1;
+            overflow: hidden;
         }
 
         .chat-details .name {
@@ -157,6 +168,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
 
         .chat-header .room-info {
@@ -169,6 +181,7 @@
             height: 45px;
             border-radius: 50%;
             margin-right: 15px;
+            object-fit: cover;
         }
 
         .chat-header .room-info .room-name {
@@ -183,7 +196,31 @@
             margin-left: 15px;
             color: #555;
         }
-        
+
+        #chat-options-menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        #chat-options-menu button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 15px;
+            text-align: left;
+            color: var(--dark-text);
+        }
+        #chat-options-menu button:hover {
+            background-color: var(--light-gray);
+        }
+
         .message-container {
             flex-grow: 1;
             padding: 20px;
@@ -191,11 +228,29 @@
             display: flex;
             flex-direction: column;
         }
+
+        .message-container .message-feedback {
+            align-self: center;
+            background-color: #e1f2fb;
+            color: #5a7d90;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
         
         .message {
             display: flex;
             margin-bottom: 15px;
             max-width: 70%;
+        }
+
+        .message.highlight {
+            animation: highlight-anim 2s ease-out;
+        }
+
+        @keyframes highlight-anim {
+            0% { background-color: var(--highlight-bg); }
+            100% { background-color: transparent; }
         }
         
         .message.sent {
@@ -211,6 +266,7 @@
             padding: 10px 15px;
             border-radius: 18px;
             position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .message.sent .message-bubble {
@@ -269,17 +325,18 @@
         #item-shop {
             position: absolute;
             bottom: 80px;
-            left: 32%; /* Position near the input */
+            left: 32%;
             width: 350px;
             background: var(--white-color);
             border-radius: 10px;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
             padding: 15px;
-            display: none; /* Hidden by default */
+            display: none;
             flex-wrap: wrap;
             gap: 10px;
             max-height: 300px;
             overflow-y: auto;
+            z-index: 20;
         }
         
         .shop-item {
@@ -346,6 +403,7 @@
             border-radius: 50%;
             margin-bottom: 15px;
             cursor: pointer;
+            object-fit: cover;
         }
         
         .profile-form input[type="text"], .profile-form input[type="file"] {
@@ -397,6 +455,7 @@
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            box-sizing: border-box;
         }
 
         .auth-buttons {
@@ -426,9 +485,8 @@
             height: 20px;
         }
 
-
         #main-app {
-            display: none; /* Hidden until logged in */
+            display: none;
             width: 100%;
             height: 100%;
         }
@@ -465,7 +523,7 @@
                     </div>
                 </header>
                 <div class="search-container">
-                    <input type="text" placeholder="Cari atau mulai chat baru">
+                    <input type="text" id="search-chat-input" placeholder="Cari atau mulai chat baru">
                 </div>
                 <div class="chat-list" id="chat-list">
                     <!-- Chat items will be dynamically inserted here -->
@@ -482,8 +540,12 @@
                         </div>
                     </div>
                     <div class="toolbar">
-                         <button title="Search">🔍</button>
-                         <button title="More">⋮</button>
+                         <button id="search-messages-btn" title="Search Messages">🔍</button>
+                         <button id="more-options-btn" title="More">⋮</button>
+                    </div>
+                    <div id="chat-options-menu">
+                        <button id="room-details-btn">Room Details</button>
+                        <button id="leave-room-btn">Leave Room</button>
                     </div>
                 </header>
                 <div class="message-container" id="message-container">
@@ -523,46 +585,20 @@
     </div>
     
     <script>
-        // --- KONFIGURASI SUPABASE ---
-        const SUPABASE_URL = 'Yhttps://exjeedwqdcjhtkczxpor.supabase.co'; // Ganti dengan URL Supabase Anda
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4amVlZHdxZGNqaHRrY3p4cG9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTkyNzQzMDgsImV4cCI6MjAzNDg1MDMwOH0.2i6m09wA5jD5pT3E2xG3EZrMei3VwR_B319q2Jz3jmM'; // Ganti dengan Anon Key Anda
+        // --- KONFIGURASI SUPABASE (FIXED!) ---
+        const SUPABASE_URL = 'https://pjannfbzbongxxnyiowu.supabase.co'; // FIX: Menghapus 'Y' yang salah
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqYW5uZmJ6Ym9uZ3h4bnlpb3d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyMTI5NzMsImV4cCI6MjA2Nzc4ODk3M30.3grDy54FX6bm3wQ_p9gYTQ7R1p1eGGYqyoLV01eUw0I';
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- ASET ITEM/EMO ---
+        // --- ASET ITEM/EMO (Tidak Berubah) ---
         const chatItems = [
-            { name: "Boxing Glove", price: 50, url: "https://img.icons8.com/emoji/48/boxing-glove-emoji.png" },
-            { name: "Badminton", price: 20, url: "https://img.icons8.com/emoji/48/badminton-emoji.png" },
-            { name: "Bullseye", price: 100, url: "https://img.icons8.com/emoji/48/bullseye.png" },
-            { name: "Chess Pawn", price: 75, url: "https://img.icons8.com/emoji/48/chess-pawn.png" },
-            { name: "Japanese Dolls", price: 500, url: "https://img.icons8.com/emoji/48/japanese-dolls.png" },
-            { name: "Kite", price: 1000, url: "https://img.icons8.com/emoji/48/kite-.png" },
-            { name: "Nesting Dolls", price: 2000, url: "https://img.icons8.com/emoji/48/nesting-dolls.png" },
-            { name: "Teddy Bear", price: 3000, url: "https://img.icons8.com/emoji/48/teddy-bear-.png" },
-            { name: "Ant", price: 5000, url: "https://img.icons8.com/emoji/48/ant-emoji.png" },
-            { name: "Butterfly", price: 7000, url: "https://img.icons8.com/emoji/48/butterfly-emoji.png" },
-            { name: "Dog Face", price: 9000, url: "https://img.icons8.com/emoji/48/dog-face.png" },
-            { name: "Elephant", price: 10000, url: "https://img.icons8.com/emoji/48/elephant-emoji.png" },
-            { name: "Ewe", price: 12000, url: "https://img.icons8.com/emoji/48/ewe-emoji.png" },
-            { name: "Fly", price: 3000, url: "https://img.icons8.com/emoji/48/fly-emoji.png" },
-            { name: "Fox", price: 15000, url: "https://img.icons8.com/emoji/48/fox-emoji.png" },
-            { name: "Goat", price: 7000, url: "https://img.icons8.com/emoji/48/goat-emoji.png" },
-            { name: "Gorilla", price: 25000, url: "https://img.icons8.com/emoji/48/gorilla-emoji.png" },
-            { name: "Hatching Chick", price: 75000, url: "https://img.icons8.com/emoji/48/hatching-chick--v2.png" },
-            { name: "Hibiscus", price: 20000, url: "https://img.icons8.com/emoji/48/hibiscus.png" },
-            { name: "Kangaroo", price: 6000, url: "https://img.icons8.com/emoji/48/kangaroo-emoji.png" },
-            { name: "Lotus", price: 1000, url: "https://img.icons8.com/emoji/48/lotus-emoji.png" },
-            { name: "Monkey", price: 50000, url: "https://img.icons8.com/emoji/48/monkey--v1.png" },
-            { name: "Mouse", price: 15000, url: "https://img.icons8.com/emoji/48/mouse-body-emoji.png" },
-            { name: "Parrot", price: 3000, url: "https://img.icons8.com/emoji/48/parrot-emoji.png" },
-            { name: "Penguin", price: 30000, url: "https://img.icons8.com/emoji/48/penguin--v2.png" },
-            { name: "Pig", price: 100000, url: "https://img.icons8.com/emoji/48/pig-emoji.png" },
-            { name: "Rose", price: 2000, url: "https://img.icons8.com/emoji/48/rose-emoji.png" },
-            { name: "Sauropod", price: 5000, url: "https://img.icons8.com/emoji/48/sauropod.png" },
+            { name: "Boxing Glove", price: 50, url: "https://img.icons8.com/emoji/48/boxing-glove-emoji.png" }, { name: "Badminton", price: 20, url: "https://img.icons8.com/emoji/48/badminton-emoji.png" }, { name: "Bullseye", price: 100, url: "https://img.icons8.com/emoji/48/bullseye.png" }, { name: "Chess Pawn", price: 75, url: "https://img.icons8.com/emoji/48/chess-pawn.png" }, { name: "Japanese Dolls", price: 500, url: "https://img.icons8.com/emoji/48/japanese-dolls.png" }, { name: "Kite", price: 1000, url: "https://img.icons8.com/emoji/48/kite-.png" }, { name: "Nesting Dolls", price: 2000, url: "https://img.icons8.com/emoji/48/nesting-dolls.png" }, { name: "Teddy Bear", price: 3000, url: "https://img.icons8.com/emoji/48/teddy-bear-.png" }, { name: "Ant", price: 5000, url: "https://img.icons8.com/emoji/48/ant-emoji.png" }, { name: "Butterfly", price: 7000, url: "https://img.icons8.com/emoji/48/butterfly-emoji.png" }, { name: "Dog Face", price: 9000, url: "https://img.icons8.com/emoji/48/dog-face.png" }, { name: "Elephant", price: 10000, url: "https://img.icons8.com/emoji/48/elephant-emoji.png" }, { name: "Ewe", price: 12000, url: "https://img.icons8.com/emoji/48/ewe-emoji.png" }, { name: "Fly", price: 3000, url: "https://img.icons8.com/emoji/48/fly-emoji.png" }, { name: "Fox", price: 15000, url: "https://img.icons8.com/emoji/48/fox-emoji.png" }, { name: "Goat", price: 7000, url: "https://img.icons8.com/emoji/48/goat-emoji.png" }, { name: "Gorilla", price: 25000, url: "https://img.icons8.com/emoji/48/gorilla-emoji.png" }, { name: "Hatching Chick", price: 75000, url: "https://img.icons8.com/emoji/48/hatching-chick--v2.png" }, { name: "Hibiscus", price: 20000, url: "https://img.icons8.com/emoji/48/hibiscus.png" }, { name: "Kangaroo", price: 6000, url: "https://img.icons8.com/emoji/48/kangaroo-emoji.png" }, { name: "Lotus", price: 1000, url: "https://img.icons8.com/emoji/48/lotus-emoji.png" }, { name: "Monkey", price: 50000, url: "https://img.icons8.com/emoji/48/monkey--v1.png" }, { name: "Mouse", price: 15000, url: "https://img.icons8.com/emoji/48/mouse-body-emoji.png" }, { name: "Parrot", price: 3000, url: "https://img.icons8.com/emoji/48/parrot-emoji.png" }, { name: "Penguin", price: 30000, url: "https://img.icons8.com/emoji/48/penguin--v2.png" }, { name: "Pig", price: 100000, url: "https://img.icons8.com/emoji/48/pig-emoji.png" }, { name: "Rose", price: 2000, url: "https://img.icons8.com/emoji/48/rose-emoji.png" }, { name: "Sauropod", price: 5000, url: "https://img.icons8.com/emoji/48/sauropod.png" },
         ];
         
         // --- State Aplikasi ---
         let currentUser = null;
         let currentRoomId = null;
+        let currentRoomDetails = null;
         let messageSubscription = null;
 
         // --- Elemen DOM ---
@@ -585,16 +621,20 @@
         const itemShop = document.getElementById('item-shop');
         const uploadMediaButton = document.getElementById('upload-media-button');
         const mediaFileInput = document.getElementById('media-file-input');
+        const searchChatInput = document.getElementById('search-chat-input');
+        const searchMessagesBtn = document.getElementById('search-messages-btn');
+        const moreOptionsBtn = document.getElementById('more-options-btn');
+        const chatOptionsMenu = document.getElementById('chat-options-menu');
+        const roomDetailsBtn = document.getElementById('room-details-btn');
+        const leaveRoomBtn = document.getElementById('leave-room-btn');
         
         // --- Fungsi Utama ---
-
-        // Memeriksa sesi login saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await sb.auth.getSession();
-            handleAuth(session);
-            
-            // Listener untuk perubahan status auth (login/logout)
-            sb.auth.onAuthStateChange(async (_event, session) => {
+        document.addEventListener('DOMContentLoaded', () => {
+            sb.auth.onAuthStateChange((_event, session) => {
+                handleAuth(session);
+            });
+            // Cek sesi awal secara manual untuk mempercepat pemuatan UI
+            sb.auth.getSession().then(({ data: { session } }) => {
                 handleAuth(session);
             });
         });
@@ -615,6 +655,7 @@
             await loadUserProfile();
             await loadRooms();
             loadItemShop();
+            initializeEventListeners();
         }
 
         function showAuthScreen() {
@@ -629,9 +670,7 @@
 
         async function loadUserProfile() {
             if (!currentUser) return;
-            
             const { data, error } = await sb.from('profiles').select('username, avatar_url').eq('id', currentUser.id).single();
-
             if (data) {
                 document.getElementById('sidebar-username').textContent = data.username || 'User';
                 document.getElementById('username-input').value = data.username || '';
@@ -639,16 +678,21 @@
                 document.getElementById('sidebar-avatar').src = avatarUrl;
                 document.getElementById('profile-modal-avatar').src = avatarUrl;
             } else if (error && error.code === 'PGRST116') {
-                // Buat profil jika belum ada (PGRST116: 0 rows returned)
-                const { error: insertError } = await sb.from('profiles').insert({ id: currentUser.id, username: 'New User' });
+                const { error: insertError } = await sb.from('profiles').insert({ id: currentUser.id, username: 'New User (Edit me!)' });
                 if (!insertError) await loadUserProfile();
             }
         }
 
         async function loadRooms() {
+            chatList.innerHTML = `<div class="chat-list-feedback">Memuat room...</div>`;
             const { data: rooms, error } = await sb.from('rooms').select('*');
             if (error) {
                 console.error("Error loading rooms:", error);
+                chatList.innerHTML = `<div class="chat-list-feedback">Gagal memuat room.</div>`;
+                return;
+            }
+            if (rooms.length === 0) {
+                chatList.innerHTML = `<div class="chat-list-feedback">Belum ada room. Buat satu!</div>`;
                 return;
             }
             chatList.innerHTML = '';
@@ -657,74 +701,70 @@
                 roomElement.className = 'chat-item';
                 roomElement.dataset.roomId = room.id;
                 roomElement.innerHTML = `
-                    <img src="https://img.icons8.com/fluency/96/group.png" alt="Room Avatar">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(room.name)}&background=random" alt="Room Avatar">
                     <div class="chat-details">
                         <div class="name">${room.name}</div>
                         <div class="last-message">Klik untuk bergabung...</div>
-                    </div>
-                `;
-                roomElement.addEventListener('click', () => joinRoom(room.id, room.name));
+                    </div>`;
+                roomElement.addEventListener('click', () => joinRoom(room));
                 chatList.appendChild(roomElement);
             });
         }
         
-        async function joinRoom(roomId, roomName) {
-            if (currentRoomId === roomId) return;
+        async function joinRoom(room) {
+            if (currentRoomId === room.id) return;
             
-            currentRoomId = roomId;
+            currentRoomId = room.id;
+            currentRoomDetails = room;
 
-            // Hapus highlight dari room sebelumnya
             document.querySelectorAll('.chat-item.active').forEach(el => el.classList.remove('active'));
-            // Tambahkan highlight ke room yang aktif
-            document.querySelector(`.chat-item[data-room-id="${roomId}"]`).classList.add('active');
+            document.querySelector(`.chat-item[data-room-id="${room.id}"]`).classList.add('active');
 
+            document.getElementById('room-name').textContent = room.name;
+            document.getElementById('room-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(room.name)}&background=random`;
+            messageContainer.innerHTML = `<div class="message-feedback">Memuat pesan...</div>`;
 
-            document.getElementById('room-name').textContent = roomName;
-            messageContainer.innerHTML = '<h3>Memuat pesan...</h3>';
+            await loadMessages(room.id);
 
-            await loadMessages(roomId);
-
-            if (messageSubscription) {
-                messageSubscription.unsubscribe();
-            }
+            if (messageSubscription) messageSubscription.unsubscribe();
             
-            messageSubscription = sb.channel(`room_${roomId}`)
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` }, 
+            messageSubscription = sb.channel(`room_${room.id}`)
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${room.id}` }, 
                     async (payload) => {
                         const { data: profile } = await sb.from('profiles').select('username, avatar_url').eq('id', payload.new.user_id).single();
                         displayMessage(payload.new, profile);
                     }
-                )
-                .subscribe();
+                ).subscribe();
         }
 
         async function loadMessages(roomId) {
-             const { data: messages, error } = await sb
-                .from('messages')
-                .select(`
-                    *,
-                    profile:profiles(username, avatar_url)
-                `)
-                .eq('room_id', roomId)
-                .order('created_at', { ascending: true });
-
-            if(error) {
-                console.error("Error loading messages:", error);
+             const { data: messages, error } = await sb.from('messages').select(`*, profile:profiles(username, avatar_url)`).eq('room_id', roomId).order('created_at', { ascending: true });
+            if (error) {
+                messageContainer.innerHTML = `<div class="message-feedback">Gagal memuat pesan.</div>`;
                 return;
             }
             
             messageContainer.innerHTML = '';
-            messages.forEach(msg => displayMessage(msg, msg.profile));
+            if (messages.length === 0) {
+                 messageContainer.innerHTML = `<div class="message-feedback">Jadilah yang pertama mengirim pesan!</div>`;
+            } else {
+                messages.forEach(msg => displayMessage(msg, msg.profile));
+            }
         }
 
         function displayMessage(message, profile) {
+            const feedback = messageContainer.querySelector('.message-feedback');
+            if (feedback) feedback.remove();
+
             const msgDiv = document.createElement('div');
             const isSent = message.user_id === currentUser.id;
             msgDiv.className = `message ${isSent ? 'sent' : 'received'}`;
             
+            const avatarUrl = profile.avatar_url ? getPublicUrl('avatars', profile.avatar_url) : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username || 'U')}`;
             let contentHTML = '';
+
             if (message.content) {
-                contentHTML = `<p>${message.content}</p>`;
+                contentHTML = `<p>${message.content.replace(/</g, "<").replace(/>/g, ">")}</p>`;
             } else if (message.item_url) {
                 contentHTML = `<div class="message-content">
                     <img src="${message.item_url}" class="chat-item-gif" alt="Chat Item">
@@ -732,7 +772,7 @@
                 </div>`;
             } else if(message.media_url) {
                 const mediaUrl = getPublicUrl('media', message.media_url);
-                 contentHTML = `<img src="${mediaUrl}" class="chat-media" alt="Media">`;
+                 contentHTML = `<img src="${mediaUrl}" class="chat-media" alt="Media" onclick="window.open('${mediaUrl}', '_blank')">`;
             }
 
             msgDiv.innerHTML = `
@@ -749,37 +789,16 @@
         async function sendMessage() {
             const content = messageInput.value.trim();
             if (!content || !currentRoomId) return;
-
-            const { error } = await sb.from('messages').insert({
-                content: content,
-                user_id: currentUser.id,
-                room_id: currentRoomId
-            });
-
-            if (error) {
-                console.error('Error sending message:', error);
-            } else {
-                messageInput.value = '';
-            }
+            messageInput.value = '';
+            const { error } = await sb.from('messages').insert({ content: content, user_id: currentUser.id, room_id: currentRoomId });
+            if (error) console.error('Error sending message:', error);
         }
         
         async function sendItem(item) {
-             if (!currentRoomId) {
-                 alert("Pilih room terlebih dahulu!");
-                 return;
-             }
-            
-             const { error } = await sb.from('messages').insert({
-                user_id: currentUser.id,
-                room_id: currentRoomId,
-                item_url: item.url,
-                item_price: item.price
-            });
-
-            if (error) {
-                console.error('Error sending item:', error);
-            }
-            itemShop.style.display = 'none'; // Sembunyikan setelah mengirim
+             if (!currentRoomId) { alert("Pilih room terlebih dahulu!"); return; }
+             itemShop.style.display = 'none';
+             const { error } = await sb.from('messages').insert({ user_id: currentUser.id, room_id: currentRoomId, item_url: item.url, item_price: item.price });
+             if (error) console.error('Error sending item:', error);
         }
 
         function loadItemShop() {
@@ -787,10 +806,7 @@
             chatItems.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'shop-item';
-                itemDiv.innerHTML = `
-                    <img src="${item.url}" alt="${item.name}">
-                    <div class="price">Rp. ${item.price.toLocaleString()}</div>
-                `;
+                itemDiv.innerHTML = `<img src="${item.url}" alt="${item.name}"><div class="price">Rp. ${item.price.toLocaleString()}</div>`;
                 itemDiv.onclick = () => sendItem(item);
                 itemShop.appendChild(itemDiv);
             });
@@ -800,129 +816,146 @@
             const { data } = sb.storage.from(bucket).getPublicUrl(path);
             return data.publicUrl;
         }
-
-        // --- Event Listeners ---
-        loginButton.addEventListener('click', async () => {
-            setAuthFeedback('');
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('password-input').value;
-            
-            const { error } = await sb.auth.signInWithPassword({ email, password });
-            
-            if (error) {
-                setAuthFeedback(error.message);
-            }
-            // onAuthStateChange akan menangani sisanya
-        });
         
-        signupButton.addEventListener('click', async () => {
+        // --- Event Listeners Diinisialisasi Sekali ---
+        function initializeEventListeners() {
+            loginButton.addEventListener('click', handleLogin);
+            signupButton.addEventListener('click', handleSignup);
+            logoutButton.addEventListener('click', () => sb.auth.signOut());
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+            userProfileButton.addEventListener('click', () => profileModal.style.display = 'flex');
+            closeModalBtn.addEventListener('click', () => profileModal.style.display = 'none');
+            profileForm.addEventListener('submit', handleProfileUpdate);
+            addRoomBtn.addEventListener('click', handleAddRoom);
+            itemShopButton.addEventListener('click', () => { itemShop.style.display = itemShop.style.display === 'flex' ? 'none' : 'flex'; });
+            uploadMediaButton.addEventListener('click', () => mediaFileInput.click());
+            mediaFileInput.addEventListener('change', handleMediaUpload);
+            
+            // --- Fitur Baru ---
+            searchChatInput.addEventListener('input', handleChatSearch);
+            searchMessagesBtn.addEventListener('click', handleMessageSearch);
+            moreOptionsBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Mencegah window click listener tertutup langsung
+                chatOptionsMenu.style.display = chatOptionsMenu.style.display === 'block' ? 'none' : 'block';
+            });
+            roomDetailsBtn.addEventListener('click', showRoomDetails);
+            leaveRoomBtn.addEventListener('click', () => alert('Fitur "Leave Room" sedang dalam pengembangan!'));
+            
+            // Menutup menu jika klik di luar
+            window.addEventListener('click', () => {
+                if (chatOptionsMenu.style.display === 'block') {
+                    chatOptionsMenu.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Handler untuk Event Listeners ---
+        async function handleLogin() {
             setAuthFeedback('');
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('password-input').value;
+            const { error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) setAuthFeedback(error.message);
+        }
 
+        async function handleSignup() {
+            setAuthFeedback('');
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
             const { data, error } = await sb.auth.signUp({ email, password });
-
             if (error) {
                 setAuthFeedback(error.message);
             } else if (data.user && data.user.identities && data.user.identities.length === 0) {
-                 setAuthFeedback("Pengguna dengan email ini sudah ada.", true);
+                setAuthFeedback("Pengguna dengan email ini sudah ada.", true);
             } else if (data.user) {
-                setAuthFeedback('Akun berhasil dibuat! Silakan cek email untuk verifikasi.', false);
+                setAuthFeedback('Akun berhasil dibuat! Cek email untuk verifikasi.', false);
             }
-        });
+        }
 
-
-        logoutButton.addEventListener('click', () => {
-            sb.auth.signOut();
-        });
-
-        sendButton.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-
-        userProfileButton.addEventListener('click', () => {
-            profileModal.style.display = 'flex';
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            profileModal.style.display = 'none';
-        });
-
-        profileForm.addEventListener('submit', async (e) => {
+        async function handleProfileUpdate(e) {
             e.preventDefault();
             const newUsername = document.getElementById('username-input').value;
             const avatarFile = document.getElementById('avatar-file-input').files[0];
             let avatar_url = null;
-
             if (avatarFile) {
                 const filePath = `${currentUser.id}/${Date.now()}_${avatarFile.name}`;
                 const { error: uploadError } = await sb.storage.from('avatars').upload(filePath, avatarFile);
-                if (uploadError) {
-                    alert('Gagal mengunggah avatar!');
-                    console.error(uploadError);
-                } else {
-                    avatar_url = filePath;
-                }
+                if (uploadError) { alert('Gagal mengunggah avatar!'); console.error(uploadError); } 
+                else { avatar_url = filePath; }
             }
-
-            const updates = {
-                id: currentUser.id,
-                username: newUsername,
-                updated_at: new Date(),
-            };
+            const updates = { id: currentUser.id, username: newUsername, updated_at: new Date() };
             if(avatar_url) updates.avatar_url = avatar_url;
-
             const { error } = await sb.from('profiles').upsert(updates);
-            if(error) {
-                alert('Gagal memperbarui profil!');
-                console.error(error);
-            } else {
-                alert('Profil berhasil diperbarui!');
-                profileModal.style.display = 'none';
-                await loadUserProfile();
-            }
-        });
+            if(error) { alert('Gagal memperbarui profil!'); console.error(error); } 
+            else { alert('Profil berhasil diperbarui!'); profileModal.style.display = 'none'; await loadUserProfile(); }
+        }
 
-        addRoomBtn.addEventListener('click', async () => {
+        async function handleAddRoom() {
             const roomName = prompt("Masukkan nama room baru:");
             if(roomName && roomName.trim() !== '') {
                 const { error } = await sb.from('rooms').insert({ name: roomName, created_by: currentUser.id });
-                if (error) {
-                    console.error('Gagal membuat room:', error);
-                } else {
-                    alert('Room berhasil dibuat!');
-                    await loadRooms();
-                }
+                if (error) { console.error('Gagal membuat room:', error); } 
+                else { alert('Room berhasil dibuat!'); await loadRooms(); }
             }
-        });
+        }
 
-        itemShopButton.addEventListener('click', () => {
-            itemShop.style.display = itemShop.style.display === 'flex' ? 'none' : 'flex';
-        });
-        
-        uploadMediaButton.addEventListener('click', () => mediaFileInput.click());
-
-        mediaFileInput.addEventListener('change', async (e) => {
+        async function handleMediaUpload(e) {
             const file = e.target.files[0];
             if (!file || !currentRoomId) return;
-
             const filePath = `${currentUser.id}/${currentRoomId}/${Date.now()}_${file.name}`;
             const { error: uploadError } = await sb.storage.from('media').upload(filePath, file);
-
             if (uploadError) {
-                alert('Gagal mengunggah media!');
-                console.error(uploadError);
+                alert('Gagal mengunggah media!'); console.error(uploadError);
             } else {
-                 const { error: msgError } = await sb.from('messages').insert({
-                    user_id: currentUser.id,
-                    room_id: currentRoomId,
-                    media_url: filePath
-                });
+                const { error: msgError } = await sb.from('messages').insert({ user_id: currentUser.id, room_id: currentRoomId, media_url: filePath });
                 if(msgError) console.error("Error sending media message:", msgError);
             }
-             mediaFileInput.value = ''; // Reset input file
-        });
+            mediaFileInput.value = '';
+        }
+        
+        // --- LOGIKA FITUR BARU ---
+        function handleChatSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const allChats = document.querySelectorAll('.chat-item');
+            allChats.forEach(chat => {
+                const chatName = chat.querySelector('.name').textContent.toLowerCase();
+                if (chatName.includes(searchTerm)) {
+                    chat.style.display = 'flex';
+                } else {
+                    chat.style.display = 'none';
+                }
+            });
+        }
+        
+        function handleMessageSearch() {
+            if (!currentRoomId) return;
+            const searchTerm = prompt("Cari pesan dalam room ini:").toLowerCase();
+            if (!searchTerm) return;
+            
+            const allMessages = document.querySelectorAll('.message-container .message');
+            let foundCount = 0;
+            allMessages.forEach(msg => {
+                msg.classList.remove('highlight');
+                const content = msg.textContent.toLowerCase();
+                if (content.includes(searchTerm)) {
+                    foundCount++;
+                    msg.classList.add('highlight');
+                    // Scroll ke pesan pertama yang ditemukan
+                    if (foundCount === 1) {
+                         msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+            alert(`${foundCount} pesan ditemukan.`);
+        }
+
+        function showRoomDetails() {
+            chatOptionsMenu.style.display = 'none';
+            if (!currentRoomDetails) return;
+            alert(`Detail Room:\n\nNama: ${currentRoomDetails.name}\nID: ${currentRoomDetails.id}\nDibuat pada: ${new Date(currentRoomDetails.created_at).toLocaleString()}`);
+        }
+
     </script>
 </body>
-</html>
+    </html>
