@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBox By Nabila Ahmad Studio Development</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #075E54;
+            --secondary-color: #128C7E;
+            --background-color: #ECE5DD;
+            --white-color: #FFFFFF;
+            --light-gray: #F0F0F0;
+            --dark-text: #333;
+            --chat-bubble-bg: #DCF8C6;
+            --border-color: #E0E0E0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--dark-text);
+        }
+
+        .chatbox-container {
+            width: 95%;
+            max-width: 1400px;
+            height: 95vh;
+            background-color: var(--white-color);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            overflow: hidden;
+        }
+        
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 30%;
+            max-width: 400px;
+            background-color: var(--white-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            background-color: var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header .profile-info {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .sidebar-header .profile-info img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .sidebar-header .toolbar button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: 15px;
+            color: #555;
+        }
+
+        .search-container {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background-color: var(--light-gray);
+            font-size: 14px;
+        }
+
+        .chat-list {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s;
+        }
+
+        .chat-item:hover, .chat-item.active {
+            background-color: var(--light-gray);
+        }
+
+        .chat-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .chat-details {
+            flex-grow: 1;
+        }
+
+        .chat-details .name {
+            font-weight: 600;
+        }
+        
+        .chat-details .last-message {
+            color: #666;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* --- Chat Window --- */
+        .chat-window {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-repeat: repeat;
+        }
+        
+        .chat-header {
+            padding: 15px;
+            background-color: var(--light-gray);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header .room-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header .room-info img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .chat-header .room-info .room-name {
+            font-weight: 600;
+        }
+
+        .chat-header .toolbar button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: 15px;
+            color: #555;
+        }
+        
+        .message-container {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            max-width: 70%;
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message.received {
+            align-self: flex-start;
+        }
+        
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .message.sent .message-bubble {
+            background-color: var(--chat-bubble-bg);
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.received .message-bubble {
+            background-color: var(--white-color);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-content img.chat-item-gif {
+            width: 80px;
+            height: 80px;
+        }
+
+        .message-content img.chat-media {
+            max-width: 300px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: gray;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .chat-input-area {
+            padding: 15px;
+            background-color: var(--light-gray);
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-input-area button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin: 0 10px;
+            color: #555;
+        }
+
+        #message-input {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+
+        /* --- Item/Emo Shop --- */
+        #item-shop {
+            position: absolute;
+            bottom: 80px;
+            left: 32%; /* Position near the input */
+            width: 350px;
+            background: var(--white-color);
+            border-radius: 10px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: none; /* Hidden by default */
+            flex-wrap: wrap;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .shop-item {
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .shop-item:hover {
+            transform: scale(1.1);
+        }
+        
+        .shop-item img {
+            width: 48px;
+            height: 48px;
+        }
+
+        .shop-item .price {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* --- Profile Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .modal-content h2 {
+            margin-top: 0;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .profile-form img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        .profile-form input[type="text"], .profile-form input[type="file"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .profile-form button {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Auth Screen */
+        #auth-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: var(--primary-color);
+        }
+        
+        #auth-screen h1 {
+            color: var(--white-color);
+            margin-bottom: 30px;
+        }
+
+        #auth-form {
+            background: var(--white-color);
+            padding: 40px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        #auth-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #auth-form button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--secondary-color);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #main-app {
+            display: none; /* Hidden until logged in */
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <h1>ChatBox By Nabila Ahmad Studio</h1>
+        <div id="auth-form">
+            <input type="email" id="email-input" placeholder="Email">
+            <input type="password" id="password-input" placeholder="Password">
+            <button id="login-button">Login / Sign Up</button>
+        </div>
+    </div>
+
+    <div id="main-app">
+        <div class="chatbox-container">
+            <!-- Sidebar with Chat List -->
+            <aside class="sidebar">
+                <header class="sidebar-header">
+                    <div class="profile-info" id="user-profile-button">
+                        <img id="sidebar-avatar" src="https://img.icons8.com/material/96/user-male-circle.png" alt="Avatar">
+                        <span id="sidebar-username">User</span>
+                    </div>
+                    <div class="toolbar">
+                        <button id="add-room-btn" title="Buat Room Baru">➕</button>
+                        <button id="logout-button" title="Logout">🚪</button>
+                    </div>
+                </header>
+                <div class="search-container">
+                    <input type="text" placeholder="Cari atau mulai chat baru">
+                </div>
+                <div class="chat-list" id="chat-list">
+                    <!-- Chat items will be dynamically inserted here -->
+                </div>
+            </aside>
+
+            <!-- Main Chat Window -->
+            <main class="chat-window">
+                <header class="chat-header">
+                    <div class="room-info" id="current-room-info">
+                        <img id="room-avatar" src="https://img.icons8.com/fluency/96/group.png" alt="Room Avatar">
+                        <div class="room-details">
+                            <div id="room-name" class="room-name">Pilih Room untuk Memulai</div>
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                         <button title="Search">🔍</button>
+                         <button title="More">⋮</button>
+                    </div>
+                </header>
+                <div class="message-container" id="message-container">
+                    <!-- Messages will be dynamically inserted here -->
+                </div>
+                <div class="chat-input-area">
+                    <button id="item-shop-button" title="Kirim Item">🎁</button>
+                    <button id="upload-media-button" title="Unggah Media">📎</button>
+                    <input type="file" id="media-file-input" style="display: none;" accept="image/*,video/*">
+
+                    <input type="text" id="message-input" placeholder="Ketik pesan...">
+                    <button id="send-button" title="Kirim">➤</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Item/Emo Shop Popup -->
+        <div id="item-shop">
+            <!-- Items will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">×</span>
+            <h2>Edit Profil</h2>
+            <form class="profile-form" id="profile-form">
+                <label for="avatar-file-input">
+                    <img id="profile-modal-avatar" src="https://img.icons8.com/material/96/user-male-circle.png" alt="Avatar">
+                </label>
+                <input type="file" id="avatar-file-input" style="display: none;" accept="image/*">
+                <input type="text" id="username-input" placeholder="Nama Pengguna" required>
+                <button type="submit">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // --- KONFIGURASI SUPABASE ---
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Ganti dengan URL Supabase Anda
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Ganti dengan Anon Key Anda
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- ASET ITEM/EMO ---
+        const chatItems = [
+            { name: "Boxing Glove", price: 50, url: "https://img.icons8.com/emoji/48/boxing-glove-emoji.png" },
+            { name: "Badminton", price: 20, url: "https://img.icons8.com/emoji/48/badminton-emoji.png" },
+            { name: "Bullseye", price: 100, url: "https://img.icons8.com/emoji/48/bullseye.png" },
+            { name: "Chess Pawn", price: 75, url: "https://img.icons8.com/emoji/48/chess-pawn.png" },
+            { name: "Japanese Dolls", price: 500, url: "https://img.icons8.com/emoji/48/japanese-dolls.png" },
+            { name: "Kite", price: 1000, url: "https://img.icons8.com/emoji/48/kite-.png" },
+            { name: "Nesting Dolls", price: 2000, url: "https://img.icons8.com/emoji/48/nesting-dolls.png" },
+            { name: "Teddy Bear", price: 3000, url: "https://img.icons8.com/emoji/48/teddy-bear-.png" },
+            { name: "Ant", price: 5000, url: "https://img.icons8.com/emoji/48/ant-emoji.png" },
+            { name: "Butterfly", price: 7000, url: "https://img.icons8.com/emoji/48/butterfly-emoji.png" },
+            { name: "Dog Face", price: 9000, url: "https://img.icons8.com/emoji/48/dog-face.png" },
+            { name: "Elephant", price: 10000, url: "https://img.icons8.com/emoji/48/elephant-emoji.png" },
+            { name: "Ewe", price: 12000, url: "https://img.icons8.com/emoji/48/ewe-emoji.png" },
+            { name: "Fly", price: 3000, url: "https://img.icons8.com/emoji/48/fly-emoji.png" },
+            { name: "Fox", price: 15000, url: "https://img.icons8.com/emoji/48/fox-emoji.png" },
+            { name: "Goat", price: 7000, url: "https://img.icons8.com/emoji/48/goat-emoji.png" },
+            { name: "Gorilla", price: 25000, url: "https://img.icons8.com/emoji/48/gorilla-emoji.png" },
+            { name: "Hatching Chick", price: 75000, url: "https://img.icons8.com/emoji/48/hatching-chick--v2.png" },
+            { name: "Hibiscus", price: 20000, url: "https://img.icons8.com/emoji/48/hibiscus.png" },
+            { name: "Kangaroo", price: 6000, url: "https://img.icons8.com/emoji/48/kangaroo-emoji.png" },
+            { name: "Lotus", price: 1000, url: "https://img.icons8.com/emoji/48/lotus-emoji.png" },
+            { name: "Monkey", price: 50000, url: "https://img.icons8.com/emoji/48/monkey--v1.png" },
+            { name: "Mouse", price: 15000, url: "https://img.icons8.com/emoji/48/mouse-body-emoji.png" },
+            { name: "Parrot", price: 3000, url: "https://img.icons8.com/emoji/48/parrot-emoji.png" },
+            { name: "Penguin", price: 30000, url: "https://img.icons8.com/emoji/48/penguin--v2.png" },
+            { name: "Pig", price: 100000, url: "https://img.icons8.com/emoji/48/pig-emoji.png" },
+            { name: "Rose", price: 2000, url: "https://img.icons8.com/emoji/48/rose-emoji.png" },
+            { name: "Sauropod", price: 5000, url: "https://img.icons8.com/emoji/48/sauropod.png" },
+        ];
+        
+        // --- State Aplikasi ---
+        let currentUser = null;
+        let currentRoomId = null;
+        let messageSubscription = null;
+
+        // --- Elemen DOM ---
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
+        const loginButton = document.getElementById('login-button');
+        const logoutButton = document.getElementById('logout-button');
+        const messageContainer = document.getElementById('message-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const userProfileButton = document.getElementById('user-profile-button');
+        const profileModal = document.getElementById('profile-modal');
+        const closeModalBtn = document.querySelector('.close-btn');
+        const profileForm = document.getElementById('profile-form');
+        const chatList = document.getElementById('chat-list');
+        const addRoomBtn = document.getElementById('add-room-btn');
+        const itemShopButton = document.getElementById('item-shop-button');
+        const itemShop = document.getElementById('item-shop');
+        const uploadMediaButton = document.getElementById('upload-media-button');
+        const mediaFileInput = document.getElementById('media-file-input');
+        
+        // --- Fungsi Utama ---
+
+        // Memeriksa sesi login saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await sb.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                await setupApp();
+            } else {
+                showAuthScreen();
+            }
+            
+            // Listener untuk perubahan status auth (login/logout)
+            sb.auth.onAuthStateChange(async (_event, session) => {
+                if (session) {
+                    currentUser = session.user;
+                    await setupApp();
+                } else {
+                    currentUser = null;
+                    showAuthScreen();
+                }
+            });
+        });
+        
+        async function setupApp() {
+            authScreen.style.display = 'none';
+            mainApp.style.display = 'flex';
+            await loadUserProfile();
+            await loadRooms();
+            loadItemShop();
+        }
+
+        function showAuthScreen() {
+            mainApp.style.display = 'none';
+            authScreen.style.display = 'flex';
+        }
+        
+        async function loadUserProfile() {
+            if (!currentUser) return;
+            
+            const { data, error } = await sb.from('profiles').select('username, avatar_url').eq('id', currentUser.id).single();
+
+            if (data) {
+                document.getElementById('sidebar-username').textContent = data.username || 'User';
+                document.getElementById('username-input').value = data.username || '';
+                const avatarUrl = data.avatar_url ? getPublicUrl('avatars', data.avatar_url) : 'https://img.icons8.com/material/96/user-male-circle.png';
+                document.getElementById('sidebar-avatar').src = avatarUrl;
+                document.getElementById('profile-modal-avatar').src = avatarUrl;
+            } else if (error && error.details.includes("0 rows")) {
+                // Buat profil jika belum ada
+                const { error: insertError } = await sb.from('profiles').insert({ id: currentUser.id, username: 'New User' });
+                if (!insertError) await loadUserProfile();
+            }
+        }
+
+        async function loadRooms() {
+            const { data: rooms, error } = await sb.from('rooms').select('*');
+            if (error) {
+                console.error("Error loading rooms:", error);
+                return;
+            }
+            chatList.innerHTML = '';
+            rooms.forEach(room => {
+                const roomElement = document.createElement('div');
+                roomElement.className = 'chat-item';
+                roomElement.dataset.roomId = room.id;
+                roomElement.innerHTML = `
+                    <img src="https://img.icons8.com/fluency/96/group.png" alt="Room Avatar">
+                    <div class="chat-details">
+                        <div class="name">${room.name}</div>
+                        <div class="last-message">Klik untuk bergabung...</div>
+                    </div>
+                `;
+                roomElement.addEventListener('click', () => joinRoom(room.id, room.name));
+                chatList.appendChild(roomElement);
+            });
+        }
+        
+        async function joinRoom(roomId, roomName) {
+            if (currentRoomId === roomId) return;
+            
+            currentRoomId = roomId;
+
+            // Hapus highlight dari room sebelumnya
+            document.querySelectorAll('.chat-item.active').forEach(el => el.classList.remove('active'));
+            // Tambahkan highlight ke room yang aktif
+            document.querySelector(`.chat-item[data-room-id="${roomId}"]`).classList.add('active');
+
+
+            document.getElementById('room-name').textContent = roomName;
+            messageContainer.innerHTML = '<h3>Memuat pesan...</h3>';
+
+            await loadMessages(roomId);
+
+            if (messageSubscription) {
+                messageSubscription.unsubscribe();
+            }
+            
+            messageSubscription = sb.channel(`room_${roomId}`)
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` }, 
+                    async (payload) => {
+                        const { data: profile } = await sb.from('profiles').select('username, avatar_url').eq('id', payload.new.user_id).single();
+                        displayMessage(payload.new, profile);
+                    }
+                )
+                .subscribe();
+        }
+
+        async function loadMessages(roomId) {
+             const { data: messages, error } = await sb
+                .from('messages')
+                .select(`
+                    *,
+                    profile:profiles(username, avatar_url)
+                `)
+                .eq('room_id', roomId)
+                .order('created_at', { ascending: true });
+
+            if(error) {
+                console.error("Error loading messages:", error);
+                return;
+            }
+            
+            messageContainer.innerHTML = '';
+            messages.forEach(msg => displayMessage(msg, msg.profile));
+        }
+
+        function displayMessage(message, profile) {
+            const msgDiv = document.createElement('div');
+            const isSent = message.user_id === currentUser.id;
+            msgDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            
+            let contentHTML = '';
+            if (message.content) {
+                contentHTML = `<p>${message.content}</p>`;
+            } else if (message.item_url) {
+                contentHTML = `<div class="message-content">
+                    <img src="${message.item_url}" class="chat-item-gif" alt="Chat Item">
+                    <p class="price">Rp. ${message.item_price.toLocaleString()}</p>
+                </div>`;
+            } else if(message.media_url) {
+                const mediaUrl = getPublicUrl('media', message.media_url);
+                 contentHTML = `<img src="${mediaUrl}" class="chat-media" alt="Media">`;
+            }
+
+            msgDiv.innerHTML = `
+                <div class="message-bubble">
+                    ${!isSent ? `<div class="sender-name" style="font-weight:bold; color: var(--secondary-color);">${profile.username || 'User'}</div>` : ''}
+                    ${contentHTML}
+                    <div class="message-time">${new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            `;
+            messageContainer.appendChild(msgDiv);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const content = messageInput.value.trim();
+            if (!content || !currentRoomId) return;
+
+            const { error } = await sb.from('messages').insert({
+                content: content,
+                user_id: currentUser.id,
+                room_id: currentRoomId
+            });
+
+            if (error) {
+                console.error('Error sending message:', error);
+            } else {
+                messageInput.value = '';
+            }
+        }
+        
+        async function sendItem(item) {
+             if (!currentRoomId) {
+                 alert("Pilih room terlebih dahulu!");
+                 return;
+             }
+            
+             const { error } = await sb.from('messages').insert({
+                user_id: currentUser.id,
+                room_id: currentRoomId,
+                item_url: item.url,
+                item_price: item.price
+            });
+
+            if (error) {
+                console.error('Error sending item:', error);
+            }
+            itemShop.style.display = 'none'; // Sembunyikan setelah mengirim
+        }
+
+        function loadItemShop() {
+            itemShop.innerHTML = '';
+            chatItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'shop-item';
+                itemDiv.innerHTML = `
+                    <img src="${item.url}" alt="${item.name}">
+                    <div class="price">Rp. ${item.price.toLocaleString()}</div>
+                `;
+                itemDiv.onclick = () => sendItem(item);
+                itemShop.appendChild(itemDiv);
+            });
+        }
+        
+        function getPublicUrl(bucket, path) {
+            const { data } = sb.storage.from(bucket).getPublicUrl(path);
+            return data.publicUrl;
+        }
+
+        // --- Event Listeners ---
+        loginButton.addEventListener('click', async () => {
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
+            
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) {
+                 // Jika error karena user tidak ada, coba sign up
+                if (error.message.includes("Invalid login credentials")) {
+                    const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password });
+                    if (signUpError) {
+                         alert(signUpError.message);
+                    } else {
+                         alert('Akun berhasil dibuat! Silakan cek email untuk verifikasi dan login kembali.');
+                    }
+                } else {
+                    alert(error.message);
+                }
+            }
+        });
+
+        logoutButton.addEventListener('click', () => {
+            sb.auth.signOut();
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        userProfileButton.addEventListener('click', () => {
+            profileModal.style.display = 'flex';
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            profileModal.style.display = 'none';
+        });
+
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newUsername = document.getElementById('username-input').value;
+            const avatarFile = document.getElementById('avatar-file-input').files[0];
+            let avatar_url = null;
+
+            if (avatarFile) {
+                const filePath = `${currentUser.id}/${Date.now()}_${avatarFile.name}`;
+                const { error: uploadError } = await sb.storage.from('avatars').upload(filePath, avatarFile);
+                if (uploadError) {
+                    alert('Gagal mengunggah avatar!');
+                    console.error(uploadError);
+                } else {
+                    avatar_url = filePath;
+                }
+            }
+
+            const updates = {
+                id: currentUser.id,
+                username: newUsername,
+                updated_at: new Date(),
+            };
+            if(avatar_url) updates.avatar_url = avatar_url;
+
+            const { error } = await sb.from('profiles').upsert(updates);
+            if(error) {
+                alert('Gagal memperbarui profil!');
+                console.error(error);
+            } else {
+                alert('Profil berhasil diperbarui!');
+                profileModal.style.display = 'none';
+                await loadUserProfile();
+            }
+        });
+
+        addRoomBtn.addEventListener('click', async () => {
+            const roomName = prompt("Masukkan nama room baru:");
+            if(roomName && roomName.trim() !== '') {
+                const { error } = await sb.from('rooms').insert({ name: roomName, created_by: currentUser.id });
+                if (error) {
+                    console.error('Gagal membuat room:', error);
+                } else {
+                    alert('Room berhasil dibuat!');
+                    await loadRooms();
+                }
+            }
+        });
+
+        itemShopButton.addEventListener('click', () => {
+            itemShop.style.display = itemShop.style.display === 'flex' ? 'none' : 'flex';
+        });
+        
+        uploadMediaButton.addEventListener('click', () => mediaFileInput.click());
+
+        mediaFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file || !currentRoomId) return;
+
+            const filePath = `${currentUser.id}/${currentRoomId}/${Date.now()}_${file.name}`;
+            const { error: uploadError } = await sb.storage.from('media').upload(filePath, file);
+
+            if (uploadError) {
+                alert('Gagal mengunggah media!');
+                console.error(uploadError);
+            } else {
+                 const { error: msgError } = await sb.from('messages').insert({
+                    user_id: currentUser.id,
+                    room_id: currentRoomId,
+                    media_url: filePath
+                });
+                if(msgError) console.error("Error sending media message:", msgError);
+            }
+             mediaFileInput.value = ''; // Reset input file
+        });
+    </script>
+</body>
+</html>
