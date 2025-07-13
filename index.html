@@ -6,8 +6,8 @@
     
     <!-- SEO (Search Engine Optimization) Tags -->
     <title>Nabila Studio Development AI - AI Content Tools</title>
-    <meta name="description" content="Nabila Studio Development AI menyediakan alat AI canggih untuk membuat prompt novel terstruktur dan menghasilkan gambar fotorealistik. Bawa kunci API Anda sendiri dan mulailah berkreasi.">
-    <meta name="keywords" content="AI, Nabila Studio, Novel Generator, Image Generator, AI Tools, Prompt Engineering, OpenAI, Stability AI, DALL-E, Stable Diffusion, Penulis, Seniman, Kecerdasan Buatan">
+    <meta name="description" content="Nabila Studio Development AI menyediakan alat AI canggih untuk menulis novel bab demi bab dan menghasilkan gambar fotorealistik. Bawa kunci API Anda sendiri dan mulailah berkreasi.">
+    <meta name="keywords" content="AI, Nabila Studio, Novel Writer, AI Writer, Image Generator, AI Tools, Prompt Engineering, OpenAI, Stability AI, Penulis, Seniman, Kecerdasan Buatan">
     <meta name="author" content="Nabila Studio Development">
     <meta name="robots" content="index, follow">
 
@@ -34,11 +34,7 @@
             --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -48,287 +44,133 @@
                               radial-gradient(circle at 99% 99%, var(--secondary-glow), transparent 25%);
             background-attachment: fixed;
             overflow-x: hidden;
-            padding-top: 40px; /* Space for notification bar */
+            padding-top: 40px;
         }
 
-        /* --- Notification Bar --- */
         .notification-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+            position: fixed; top: 0; left: 0; width: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            color: var(--text-light);
-            padding: 8px 0;
-            z-index: 1000;
-            font-size: 0.9em;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(5px); color: var(--text-light);
+            padding: 8px 0; z-index: 1000; font-size: 0.9em;
+            text-align: center; border-bottom: 1px solid var(--border-color);
         }
+        .notification-bar span { font-weight: 600; color: var(--secondary-glow); }
+        .notification-bar .wa-link { color: #25D366; text-decoration: none; font-weight: bold; }
 
-        .notification-bar span {
-            font-weight: 600;
-            color: var(--secondary-glow);
-        }
-        
-        .notification-bar .wa-link {
-            color: #25D366;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        /* --- Main Container --- */
         .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: rgba(29, 29, 43, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            animation: fadeIn 1s ease-out;
+            max-width: 1200px; margin: 2rem auto; padding: 2rem;
+            background: rgba(29, 29, 43, 0.5); border: 1px solid var(--border-color);
+            border-radius: 20px; box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px); animation: fadeIn 1s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Header --- */
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
+        .header { text-align: center; margin-bottom: 2rem; }
         .header h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5em;
+            font-family: 'Orbitron', sans-serif; font-size: 2.5em;
             background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: glow 2s infinite alternate;
         }
-        
-        .header h1 i {
-            margin-right: 10px;
-        }
+        .header h1 i { margin-right: 10px; }
+        @keyframes glow { from { text-shadow: 0 0 10px var(--primary-glow), 0 0 20px var(--secondary-glow); } to { text-shadow: 0 0 20px var(--primary-glow), 0 0 30px var(--secondary-glow); } }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px var(--primary-glow), 0 0 20px var(--secondary-glow); }
-            to { text-shadow: 0 0 20px var(--primary-glow), 0 0 30px var(--secondary-glow); }
-        }
-
-        /* --- Tab Navigation --- */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
+        .tabs { display: flex; justify-content: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); }
         .tab-button {
-            background: none;
-            border: none;
-            color: var(--text-dark);
-            padding: 1rem 2rem;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
+            background: none; border: none; color: var(--text-dark); padding: 1rem 2rem;
+            font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; position: relative;
         }
-
-        .tab-button:hover {
-            color: var(--text-light);
-        }
-
+        .tab-button:hover { color: var(--text-light); }
         .tab-button.active {
-            color: var(--text-light);
-            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-light); background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
         .tab-button.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
-            border-radius: 3px;
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow)); border-radius: 3px;
         }
 
-        .tab-content {
-            display: none;
-            animation: contentFadeIn 0.5s;
-        }
+        .tab-content { display: none; animation: contentFadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes contentFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes contentFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- Form Elements --- */
-        .form-section {
-            background-color: var(--bg-light);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .form-section h2 {
-            font-size: 1.5em;
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--primary-glow);
-            padding-left: 10px;
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
+        .main-layout { display: flex; gap: 2rem; }
+        .main-content { flex: 3; }
+        .sidebar-content { flex: 1; }
+        
+        .form-section { background-color: var(--bg-light); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
+        .form-section h2 { font-size: 1.5em; margin-bottom: 1rem; border-left: 4px solid var(--primary-glow); padding-left: 10px; }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-dark); }
         .input-group input, .input-group textarea, .input-group select {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-light);
-            font-size: 1em;
-            transition: all 0.3s ease;
+            width: 100%; padding: 0.8rem; background-color: var(--bg-dark);
+            border: 1px solid var(--border-color); border-radius: 8px;
+            color: var(--text-light); font-size: 1em; transition: all 0.3s ease;
         }
-
         .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
-            outline: none;
-            border-color: var(--secondary-glow);
-            box-shadow: 0 0 10px var(--secondary-glow);
+            outline: none; border-color: var(--secondary-glow); box-shadow: 0 0 10px var(--secondary-glow);
         }
-        
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
+        textarea { resize: vertical; min-height: 120px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
 
-        /* --- Buttons --- */
         .btn {
-            display: inline-block;
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.2em;
-            font-weight: 700;
-            text-align: center;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            display: inline-block; padding: 1rem; font-size: 1.2em; font-weight: 700;
+            text-align: center; border: none; border-radius: 8px; cursor: pointer;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
         }
+        .btn-primary { background: linear-gradient(90deg, var(--primary-glow), #ec4899); color: white; width: 100%;}
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+        .btn:disabled { background: var(--text-dark); cursor: not-allowed; }
 
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary-glow), #ec4899);
-            color: white;
+        .output-pane, .result-pane { background-color: var(--bg-light); border: 1px solid var(--border-color); border-radius: 15px; padding: 1.5rem; margin-top: 1.5rem; }
+        
+        #novel-output-area {
+            width: 100%; min-height: 500px; background-color: #10101a;
+            color: #f0f0f0; border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 1rem; font-size: 1.1em; line-height: 1.6;
         }
         
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* --- Output & Result Panes --- */
-        .output-pane, .result-pane {
-            background-color: var(--bg-light);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        .output-pane textarea {
-            min-height: 300px;
-        }
+        .action-buttons { display: flex; gap: 1rem; margin-top: 1rem; }
 
+        #chapter-history-list { list-style: none; padding: 0; }
+        #chapter-history-list li {
+            background: var(--bg-dark); padding: 0.8rem; border-radius: 5px;
+            margin-bottom: 0.5rem; cursor: pointer; transition: background-color 0.3s;
+            border-left: 3px solid var(--secondary-glow);
+        }
+        #chapter-history-list li:hover { background-color: #2a2a3f; }
+        
         .result-pane #image-result {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 300px;
-            border: 2px dashed var(--border-color);
-            border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 300px; border: 2px dashed var(--border-color);
+            border-radius: 10px; position: relative;
         }
-        
-        .result-pane img {
-            max-width: 100%;
-            border-radius: 10px;
-            animation: fadeIn 0.5s;
+        .result-pane img { max-width: 100%; border-radius: 10px; animation: fadeIn 0.5s; }
+        #download-image-btn {
+            position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.7);
+            color: white; border: 1px solid white; padding: 8px 15px;
         }
 
-        /* --- Floating WhatsApp Button --- */
         .whatsapp-fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #25D366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            transition: all 0.3s ease;
-            z-index: 100;
+            position: fixed; bottom: 20px; right: 20px; background-color: #25D366; color: white;
+            width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; font-size: 2em; text-decoration: none;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); transition: all 0.3s ease; z-index: 100;
         }
-
-        .whatsapp-fab:hover {
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
-        }
+        .whatsapp-fab:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6); }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            .header h1 {
-                font-size: 1.8em;
-            }
-            .tabs {
-                flex-direction: column;
-            }
-            .tab-button {
-                padding: 0.8rem 1rem;
-            }
+            .container { padding: 1rem; }
+            .header h1 { font-size: 1.8em; }
+            .tabs { flex-direction: column; }
+            .tab-button { padding: 0.8rem 1rem; }
+            .main-layout { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Notifikasi Berjalan -->
     <div class="notification-bar">
         <marquee behavior="scroll" direction="left" scrollamount="5">
             ✨ Selamat datang di <span>Nabila Studio Development AI</span>! Dikembangkan dengan ❤️ oleh Nabila Ahmad. Hubungi Admin di WhatsApp: <a href="https://wa.me/6285810526151" target="_blank" class="wa-link">085810526151</a> untuk kolaborasi. ✨
@@ -336,214 +178,165 @@
     </div>
 
     <div class="container">
-        <header class="header">
-            <h1><i class="fa-solid fa-brain"></i>NABILA STUDIO DEVELOPMENT AI</h1>
-        </header>
+        <header class="header"><h1><i class="fa-solid fa-brain"></i>NABILA STUDIO DEVELOPMENT AI</h1></header>
 
         <nav class="tabs">
-            <button class="tab-button active" onclick="switchTab(event, 'novel-generator')">
-                <i class="fa-solid fa-book-sparkles"></i> Novel Prompt Generator
-            </button>
-            <button class="tab-button" onclick="switchTab(event, 'image-generator')">
-                <i class="fa-solid fa-image"></i> Image Generator
-            </button>
+            <button class="tab-button active" onclick="switchTab(event, 'novel-writer')"><i class="fa-solid fa-book-sparkles"></i> AI Novel Writer</button>
+            <button class="tab-button" onclick="switchTab(event, 'image-generator')"><i class="fa-solid fa-image"></i> Image Generator</button>
         </nav>
 
-        <!-- NOVEL PROMPT GENERATOR -->
-        <div id="novel-generator" class="tab-content active">
-            <form id="novel-form">
-                <div class="form-section">
-                    <h2><i class="fa-solid fa-key"></i> Kunci API OpenAI</h2>
-                    <div class="input-group">
-                        <label for="openai-key">Masukkan Kunci API OpenAI Anda (disimpan di browser Anda saja)</label>
-                        <input type="password" id="openai-key" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx" required>
+        <div id="novel-writer" class="tab-content active">
+            <div class="main-layout">
+                <div class="main-content">
+                    <form id="novel-form">
+                        <!-- Form Sections (unchanged from previous version, kept for brevity) -->
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-key"></i> Kunci API OpenAI</h2>
+                            <div class="input-group"><label for="openai-key">Masukkan Kunci API OpenAI Anda</label><input type="password" id="openai-key" placeholder="sk-xxxx" required></div>
+                        </div>
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-feather-pointed"></i> Detail Dasar</h2>
+                            <div class="grid">
+                                <div class="input-group"><label for="author">Nama Penulis (Author)</label><input type="text" id="author" placeholder="Contoh: Nabila Ahmad"></div>
+                                <div class="input-group"><label for="genre">Genre Cerita</label><input type="text" id="genre" placeholder="Contoh: Fantasi Gelap, Roman Siberpunk"></div>
+                            </div>
+                        </div>
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-users"></i> Karakterisasi</h2>
+                            <div class="grid">
+                                <div class="input-group"><label for="protagonist">Karakter Protagonis</label><textarea id="protagonist" placeholder="Jelaskan karakter utama..."></textarea></div>
+                                <div class="input-group"><label for="antagonist">Karakter Antagonis</label><textarea id="antagonist" placeholder="Jelaskan penentang utama..."></textarea></div>
+                                <div class="input-group"><label for="foil">Karakter Foil</label><textarea id="foil" placeholder="Jelaskan karakter kontras..."></textarea></div>
+                            </div>
+                            <div class="input-group"><label for="other-chars">Karakter Pendukung Lainnya</label><textarea id="other-chars" placeholder="Pisahkan dengan baris baru..."></textarea></div>
+                        </div>
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-map-location-dot"></i> Latar Cerita</h2>
+                            <div class="input-group"><label for="setting">Setting Tempat dan Waktu</label><textarea id="setting" placeholder="Contoh: Sebuah kota..."></textarea></div>
+                        </div>
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-book-open-reader"></i> Plot Bab Saat Ini</h2>
+                            <div class="grid">
+                                <div class="input-group"><label for="conflict-bg">Latar Belakang Konflik</label><textarea id="conflict-bg" placeholder="Peristiwa masa lalu..."></textarea></div>
+                                <div class="input-group"><label for="conflict">Konflik Utama Bab Ini</label><textarea id="conflict" placeholder="Tantangan spesifik..."></textarea></div>
+                                <div class="input-group"><label for="climax">Klimaks Bab Ini</label><textarea id="climax" placeholder="Puncak ketegangan..."></textarea></div>
+                                <div class="input-group"><label for="plot-twist">Plot Twist (Jika Ada)</label><input type="text" id="plot-twist" placeholder="Kejutan tak terduga..."></div>
+                                <div class="input-group"><label for="resolution">Resolusi Bab Ini</label><textarea id="resolution" placeholder="Bagaimana konflik terselesaikan..."></textarea></div>
+                            </div>
+                        </div>
+                        <div class="form-section">
+                            <h2><i class="fa-solid fa-chart-line"></i> Pengembangan</h2>
+                            <div class="grid">
+                                <div class="input-group"><label for="char-dev">Pengembangan Karakter</label><textarea id="char-dev" placeholder="Bagaimana karakter berubah..."></textarea></div>
+                                <div class="input-group"><label for="story-dev">Pengembangan Cerita</label><textarea id="story-dev" placeholder="Bagaimana bab ini memajukan plot..."></textarea></div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" id="generate-novel-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Tulis Bab <span id="chapter-number-display">1</span>!</button>
+                    </form>
+                </div>
+                <div class="sidebar-content">
+                    <div class="form-section">
+                        <h2><i class="fa-solid fa-history"></i> Riwayat Bab</h2>
+                        <ul id="chapter-history-list">
+                            <!-- Chapter history will be appended here -->
+                        </ul>
                     </div>
                 </div>
-
-                <div class="form-section">
-                    <h2><i class="fa-solid fa-feather-pointed"></i> Detail Dasar</h2>
-                    <div class="grid">
-                        <div class="input-group">
-                            <label for="author">Nama Penulis (Author)</label>
-                            <input type="text" id="author" placeholder="Contoh: Andrea Hirata">
-                        </div>
-                        <div class="input-group">
-                            <label for="genre">Genre Cerita</label>
-                            <input type="text" id="genre" placeholder="Contoh: Fantasi, Sains Fiksi, Roman Sejarah">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2><i class="fa-solid fa-users"></i> Karakterisasi</h2>
-                    <div class="grid">
-                        <div class="input-group">
-                            <label for="protagonist">Karakter Protagonis</label>
-                            <textarea id="protagonist" placeholder="Jelaskan karakter utama, motivasi, dan kelemahannya."></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label for="antagonist">Karakter Antagonis</label>
-                            <textarea id="antagonist" placeholder="Jelaskan penentang utama, tujuan, dan metodenya."></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label for="foil">Karakter Foil</label>
-                            <textarea id="foil" placeholder="Jelaskan karakter yang menjadi kontras bagi protagonis untuk menonjolkan sifatnya."></textarea>
-                        </div>
-                    </div>
-                     <div class="input-group">
-                        <label for="other-chars">Karakter Pendukung Lainnya (1-10)</label>
-                        <textarea id="other-chars" placeholder="Pisahkan dengan baris baru. Contoh:
-Budi: Sahabat setia protagonis yang bijaksana.
-Citra: Ilmuwan misterius dengan agenda tersembunyi."></textarea>
-                    </div>
-                </div>
-
-                 <div class="form-section">
-                    <h2><i class="fa-solid fa-map-location-dot"></i> Latar Cerita</h2>
-                    <div class="input-group">
-                        <label for="setting">Setting Tempat dan Waktu</label>
-                        <textarea id="setting" placeholder="Contoh: Sebuah kota bawah tanah di tahun 2300, pasca-apokaliptik, di mana teknologi kuno bercampur dengan sihir."></textarea>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h2><i class="fa-solid fa-book-open-reader"></i> Struktur Narasi & Plot</h2>
-                    <div class="grid">
-                        <div class="input-group">
-                            <label for="conflict-bg">Latar Belakang Konflik</label>
-                            <textarea id="conflict-bg" placeholder="Peristiwa masa lalu yang memicu konflik utama cerita."></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label for="conflict">Konflik Utama Bab Ini</label>
-                            <textarea id="conflict" placeholder="Tantangan spesifik yang harus dihadapi karakter dalam bab ini."></textarea>
-                        </div>
-                         <div class="input-group">
-                            <label for="climax">Klimaks Bab Ini</label>
-                            <textarea id="climax" placeholder="Puncak ketegangan atau titik balik dalam bab ini."></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label for="plot-twist">Plot Twist (Jika Ada)</label>
-                            <input type="text" id="plot-twist" placeholder="Kejutan tak terduga dalam cerita.">
-                        </div>
-                        <div class="input-group">
-                            <label for="resolution">Resolusi Bab Ini</label>
-                            <textarea id="resolution" placeholder="Bagaimana konflik dalam bab ini terselesaikan (atau berkembang menjadi masalah baru)."></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2><i class="fa-solid fa-chart-line"></i> Pengembangan</h2>
-                    <div class="grid">
-                        <div class="input-group">
-                            <label for="char-dev">Pengembangan Karakter</label>
-                            <textarea id="char-dev" placeholder="Bagaimana karakter (terutama protagonis) berubah atau belajar sesuatu di bab ini?"></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label for="story-dev">Pengembangan Cerita</label>
-                            <textarea id="story-dev" placeholder="Bagaimana bab ini memajukan plot utama cerita secara keseluruhan?"></textarea>
-                        </div>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Buat Prompt Novel!</button>
-            </form>
+            </div>
 
             <div class="output-pane">
-                <h2><i class="fa-solid fa-paste"></i> Prompt Siap Pakai</h2>
-                <textarea id="novel-output" readonly placeholder="Prompt yang dihasilkan akan muncul di sini..."></textarea>
-                <button class="btn" style="background: #333; color: white; margin-top: 1rem;" onclick="copyToClipboard('novel-output')"><i class="fa-solid fa-copy"></i> Salin Prompt</button>
+                <h2><i class="fa-solid fa-file-alt"></i> Hasil Tulisan AI</h2>
+                <textarea id="novel-output-area" readonly placeholder="Hasil tulisan AI akan muncul di sini secara real-time..."></textarea>
+                <div class="action-buttons">
+                     <button class="btn" id="continue-btn" style="display: none; background: #28a745; color: white;"><i class="fa-solid fa-forward"></i> Lanjutkan Bab Ini</button>
+                     <button class="btn" id="new-chapter-btn" style="display: none; background: #007bff; color: white;"><i class="fa-solid fa-plus-circle"></i> Mulai Bab Baru</button>
+                     <button class="btn" id="save-chapter-btn" style="display: none; background: #6c757d; color: white;"><i class="fa-solid fa-save"></i> Simpan Bab (.txt)</button>
+                </div>
             </div>
         </div>
 
-        <!-- IMAGE GENERATOR -->
         <div id="image-generator" class="tab-content">
             <div class="form-section">
                 <h2><i class="fa-solid fa-key"></i> Kunci API Stability AI</h2>
-                <div class="input-group">
-                    <label for="stability-key">Masukkan Kunci API Stability AI Anda (disimpan di browser Anda saja)</label>
-                    <input type="password" id="stability-key" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx" required>
-                </div>
+                <div class="input-group"><label for="stability-key">Masukkan Kunci API Stability AI Anda</label><input type="password" id="stability-key" placeholder="sk-xxxx" required></div>
             </div>
             <div class="form-section">
                 <h2><i class="fa-solid fa-paint-brush"></i> Deskripsi Gambar</h2>
-                 <div class="input-group">
-                    <label for="image-prompt">Prompt Utama</label>
-                    <textarea id="image-prompt" placeholder="Contoh: A hyper-detailed photorealistic portrait of a female cyborg in a neon-lit cyberpunk city, rain-slicked streets, cinematic lighting, 8k"></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="negative-prompt">Prompt Negatif (Hal yang tidak diinginkan)</label>
-                    <input type="text" id="negative-prompt" placeholder="Contoh: blurry, ugly, deformed, text, watermark">
-                </div>
-                 <div class="input-group">
-                    <label for="style-preset">Gaya Artistik</label>
-                    <select id="style-preset">
-                        <option value="photographic">Fotografi</option>
-                        <option value="cinematic">Sinematik</option>
-                        <option value="anime">Anime</option>
-                        <option value="fantasy-art">Seni Fantasi</option>
-                        <option value="comic-book">Buku Komik</option>
-                        <option value="digital-art">Seni Digital</option>
-                        <option value="3d-model">Model 3D</option>
-                    </select>
+                <div class="input-group"><label for="image-prompt">Prompt Utama</label><textarea id="image-prompt" placeholder="Contoh: A hyper-detailed photorealistic portrait..."></textarea></div>
+                <div class="input-group"><label for="negative-prompt">Prompt Negatif</label><input type="text" id="negative-prompt" placeholder="Contoh: blurry, ugly..."></div>
+                <div class="grid">
+                    <div class="input-group">
+                        <label for="style-preset">Gaya Artistik</label>
+                        <select id="style-preset">
+                            <option value="photographic">Fotografi</option><option value="cinematic">Sinematik</option><option value="anime">Anime</option>
+                            <option value="fantasy-art">Seni Fantasi</option><option value="comic-book">Buku Komik</option><option value="digital-art">Seni Digital</option><option value="3d-model">Model 3D</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="aspect-ratio">Rasio Aspek</label>
+                        <select id="aspect-ratio">
+                            <option value="1:1">Persegi (1024x1024)</option><option value="16:9">Lanskap (1536x864)</option><option value="9:16">Potret (864x1536)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <button class="btn btn-primary" onclick="generateImage()"><i class="fa-solid fa-camera-retro"></i> Hasilkan Gambar!</button>
-            
             <div class="result-pane">
                  <h2><i class="fa-solid fa-image"></i> Hasil Gambar</h2>
-                 <div id="image-result">
-                     <p>Gambar yang dihasilkan akan muncul di sini.</p>
-                 </div>
+                 <div id="image-result"><p>Gambar yang dihasilkan akan muncul di sini.</p></div>
             </div>
         </div>
     </div>
 
-    <!-- Tombol Hubungi Admin WhatsApp -->
-    <a href="https://wa.me/6285810526151?text=Halo%20Admin%20Nabila%20Studio%20Development,%20saya%20tertarik%20dengan%20layanan%20AI%20Anda." target="_blank" class="whatsapp-fab">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    <a href="https://wa.me/6285810526151?text=Halo%20Admin%20Nabila%20Studio%20Development" target="_blank" class="whatsapp-fab"><i class="fab fa-whatsapp"></i></a>
 
     <script>
-        // Save and load API keys from localStorage
+        // DOM Elements
         const openaiKeyInput = document.getElementById('openai-key');
         const stabilityKeyInput = document.getElementById('stability-key');
+        const novelForm = document.getElementById('novel-form');
+        const novelOutputArea = document.getElementById('novel-output-area');
+        const generateNovelBtn = document.getElementById('generate-novel-btn');
+        const chapterNumberDisplay = document.getElementById('chapter-number-display');
+        const continueBtn = document.getElementById('continue-btn');
+        const newChapterBtn = document.getElementById('new-chapter-btn');
+        const saveChapterBtn = document.getElementById('save-chapter-btn');
+        const chapterHistoryList = document.getElementById('chapter-history-list');
 
+        // App State
+        let storyState = {
+            fullStoryContext: "",
+            currentChapterNumber: 1,
+            chapters: {},
+            isGenerating: false
+        };
+
+        // --- KEY & STATE MANAGEMENT ---
         openaiKeyInput.value = localStorage.getItem('openaiApiKey') || '';
         stabilityKeyInput.value = localStorage.getItem('stabilityApiKey') || '';
-
         openaiKeyInput.addEventListener('change', (e) => localStorage.setItem('openaiApiKey', e.target.value));
         stabilityKeyInput.addEventListener('change', (e) => localStorage.setItem('stabilityApiKey', e.target.value));
 
-        // Tab switching logic
+        // --- TAB SWITCHING ---
         function switchTab(event, tabName) {
-            let i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].classList.remove('active');
-            }
-            tablinks = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove('active');
-            }
+            document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll(".tab-button").forEach(tb => tb.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
             event.currentTarget.classList.add('active');
         }
 
-        // Novel Prompt Generation Logic
-        document.getElementById('novel-form').addEventListener('submit', function(e) {
+        // --- NOVEL WRITER LOGIC ---
+        novelForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            generateNovelChapter();
+        });
+        
+        continueBtn.addEventListener('click', () => generateNovelChapter(true));
+        newChapterBtn.addEventListener('click', startNewChapter);
+        saveChapterBtn.addEventListener('click', saveChapterToFile);
 
-            // Check if OpenAI key is present
-            if (!openaiKeyInput.value) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Harap masukkan Kunci API OpenAI Anda terlebih dahulu!',
-                });
-                return;
-            }
-
+        function buildNovelPrompt(isContinuation = false) {
             const author = document.getElementById('author').value;
             const genre = document.getElementById('genre').value;
             const protagonist = document.getElementById('protagonist').value;
@@ -559,163 +352,226 @@ Citra: Ilmuwan misterius dengan agenda tersembunyi."></textarea>
             const charDev = document.getElementById('char-dev').value;
             const storyDev = document.getElementById('story-dev').value;
 
-            const finalPrompt = `
-# PROMPT UNTUK PENULISAN BAB NOVEL
-
-**TARGET KATA: 6000-7000 KATA**
-
-Anda adalah seorang penulis sastra ahli bernama ${author || 'anonim'}. Tugas Anda adalah menulis sebuah bab novel yang kaya dan mendalam. Ikuti semua instruksi di bawah ini dengan presisi tinggi untuk menghasilkan sebuah karya sastra yang imersif.
-
----
-
-### **A. KONTEKS KESELURUHAN**
-- **Genre:** ${genre || 'Tidak ditentukan'}
-- **Setting Utama:** ${setting || 'Tidak ditentukan'}
-
-### **B. FOKUS BAB INI**
-Tuliskan sebuah bab lengkap berdasarkan plot dan pengembangan karakter berikut:
-
-1.  **Latar Belakang Konflik:**
-    \`\`\`
-    ${conflictBg || 'Tidak ditentukan'}
-    \`\`\`
-
-2.  **Konflik Utama Bab Ini:**
-    \`\`\`
-    ${conflict || 'Wajib diisi'}
-    \`\`\`
-
-3.  **Klimaks Bab Ini:**
-    \`\`\`
-    ${climax || 'Wajib diisi'}
-    \`\`\`
-
-4.  **Plot Twist (jika ada):**
-    \`\`\`
-    ${plotTwist || 'Tidak ada'}
-    \`\`\`
-
-5.  **Resolusi dan Konsekuensi Bab Ini:**
-    \`\`\`
-    ${resolution || 'Wajib diisi'}
-    \`\`\`
-
-### **C. PENGEMBANGAN CERITA & KARAKTER**
-- **Pengembangan Alur Cerita Utama:** ${storyDev || 'Jelaskan bagaimana bab ini memajukan plot global.'}
-- **Pengembangan Karakter Utama:** ${charDev || 'Jelaskan bagaimana karakter utama bertumbuh atau berubah di bab ini.'}
-
-### **D. PANDUAN PENULISAN & GAYA SASTRA (WAJIB DIIKUTI)**
-- **Kaidah Sastra:** Terapkan kaidah sastra tingkat tinggi. Gunakan puitisme dan prosa liris dalam deskripsi, ciptakan dialog yang natural namun penuh makna, dan bangun narasi yang mengalir.
-- **Simbolisme:** Integrasikan simbolisme yang relevan dengan tema cerita. Setiap objek atau kejadian penting harus memiliki lapisan makna yang lebih dalam.
-- **Show, Don't Tell:** Alih-alih memberitahu emosi atau keadaan, tunjukkan melalui tindakan, dialog, dan deskripsi sensorik (pancaindera).
-- **Struktur Kalimat:** Variasikan panjang dan struktur kalimat untuk menciptakan ritme narasi yang dinamis.
-- **Dialog:** Dialog harus mencerminkan kepribadian setiap karakter, memajukan plot, dan mengungkapkan informasi penting secara subtil.
-- **Narasi:** Bangun narasi yang seimbang antara aksi, deskripsi, dialog, dan monolog internal karakter.
-
-### **E. KARAKTER YANG TERLIBAT DI BAB INI**
-- **Protagonis:** ${protagonist || 'Wajib diisi'}
-- **Antagonis:** ${antagonist || 'Wajib diisi'}
-- **Karakter Foil:** ${foil || 'Wajib diisi'}
-- **Karakter Pendukung Lainnya:**
-${otherChars || 'Tidak ada'}
-
----
-
-Mulai tulis bab novelnya sekarang.
-            `;
+            let systemPrompt = `Anda adalah seorang penulis sastra ahli bernama ${author || 'Nabila Ahmad'}. Anda menulis novel dengan gaya yang imersif, puitis, dan penuh dengan kaidah sastra (simbolisme, prosa, dialog mendalam, narasi kaya). Anda selalu menulis dalam Bahasa Indonesia yang baku dan indah.`;
             
-            document.getElementById('novel-output').value = finalPrompt.trim();
-            Swal.fire({
-                icon: 'success',
-                title: 'Prompt Dibuat!',
-                text: 'Prompt novel Anda telah berhasil dibuat. Salin dan gunakan pada platform AI favorit Anda.',
-            });
-        });
+            let userPrompt = ``;
+            if (isContinuation) {
+                userPrompt = `Konteks Cerita Sejauh Ini:\n${storyState.fullStoryContext}\n\nLanjutkan menulis cerita dari titik terakhir persis di bawah ini. Pastikan transisinya mulus dan lanjutkan alur yang sudah ada.\n\n---\n${novelOutputArea.value}`;
+            } else {
+                let storyContextPrompt = storyState.fullStoryContext ? `Berikut adalah ringkasan cerita dari bab-bab sebelumnya. Gunakan ini sebagai konteks untuk menjaga konsistensi:\n<konteks>\n${storyState.fullStoryContext}\n</konteks>\n\n` : '';
 
-        // Copy to clipboard helper
-        function copyToClipboard(elementId) {
-            const textarea = document.getElementById(elementId);
-            if (!textarea.value) {
-                 Swal.fire('Oops!', 'Tidak ada yang bisa disalin.', 'warning');
-                 return;
+                userPrompt = `${storyContextPrompt}Sekarang, tulis **Bab ${storyState.currentChapterNumber}** secara lengkap dengan target **6000-7000 kata**.
+                
+# PROMPT UNTUK PENULISAN BAB ${storyState.currentChapterNumber}
+
+**Genre:** ${genre}
+**Setting Utama:** ${setting}
+
+## **FOKUS BAB INI**
+1.  **Latar Belakang Konflik:** ${conflictBg}
+2.  **Konflik Utama Bab Ini:** ${conflict}
+3.  **Klimaks Bab Ini:** ${climax}
+4.  **Plot Twist:** ${plotTwist || 'Tidak ada'}
+5.  **Resolusi Bab Ini:** ${resolution}
+
+## **PENGEMBANGAN**
+- **Cerita:** ${storyDev}
+- **Karakter:** ${charDev}
+
+## **KARAKTER YANG TERLIBAT**
+- **Protagonis:** ${protagonist}
+- **Antagonis:** ${antagonist}
+- **Foil:** ${foil}
+- **Lainnya:** ${otherChars}
+
+---
+Mulai tulis Bab ${storyState.currentChapterNumber} dengan judul yang menarik, dan langsung masuk ke dalam narasi.`;
             }
-            textarea.select();
-            document.execCommand('copy');
-            Swal.fire('Tersalin!', 'Prompt telah disalin ke clipboard.', 'success');
+
+            return { systemPrompt, userPrompt };
         }
 
-        // Image Generation Logic
+        async function generateNovelChapter(isContinuation = false) {
+            if (storyState.isGenerating) return;
+            const apiKey = openaiKeyInput.value;
+            if (!apiKey) {
+                Swal.fire('Error', 'Harap masukkan Kunci API OpenAI Anda.', 'error');
+                return;
+            }
+
+            setGenerationState(true);
+            if (!isContinuation) {
+                novelOutputArea.value = `Menyiapkan AI untuk menulis Bab ${storyState.currentChapterNumber}...\n\n`;
+            }
+
+            const { systemPrompt, userPrompt } = buildNovelPrompt(isContinuation);
+
+            try {
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o", // Atau model lain yang Anda prefer
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: userPrompt }
+                        ],
+                        stream: true,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API Error: ${response.status} - ${errorData.error.message}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                if (!isContinuation) novelOutputArea.value = ""; // Clear placeholder
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    const parsedLines = lines
+                        .map(line => line.replace(/^data: /, '').trim())
+                        .filter(line => line !== "" && line !== "[DONE]")
+                        .map(line => JSON.parse(line));
+
+                    for (const parsedLine of parsedLines) {
+                        const { choices } = parsedLine;
+                        const { delta } = choices[0];
+                        const { content } = delta;
+                        if (content) {
+                            novelOutputArea.value += content;
+                            novelOutputArea.scrollTop = novelOutputArea.scrollHeight; // Auto-scroll
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Streaming error:", error);
+                Swal.fire('Streaming Error', error.message, 'error');
+            } finally {
+                setGenerationState(false);
+            }
+        }
+        
+        function setGenerationState(isGenerating) {
+            storyState.isGenerating = isGenerating;
+            generateNovelBtn.disabled = isGenerating;
+            generateNovelBtn.innerHTML = isGenerating 
+                ? '<i class="fa-solid fa-spinner fa-spin"></i> Sedang Menulis...' 
+                : `<i class="fa-solid fa-wand-magic-sparkles"></i> Tulis Bab ${storyState.currentChapterNumber}!`;
+            
+            continueBtn.style.display = !isGenerating && novelOutputArea.value ? 'block' : 'none';
+            newChapterBtn.style.display = !isGenerating && novelOutputArea.value ? 'block' : 'none';
+            saveChapterBtn.style.display = !isGenerating && novelOutputArea.value ? 'block' : 'none';
+        }
+
+        function startNewChapter() {
+            // Save current chapter
+            const currentChapterContent = novelOutputArea.value;
+            if (currentChapterContent) {
+                storyState.chapters[storyState.currentChapterNumber] = currentChapterContent;
+                storyState.fullStoryContext += `\n\n--- Ringkasan Bab ${storyState.currentChapterNumber} ---\n` + currentChapterContent.substring(0, 1500) + '...'; // Simple context summary
+                updateChapterHistory();
+            }
+
+            // Increment chapter number
+            storyState.currentChapterNumber++;
+            chapterNumberDisplay.textContent = storyState.currentChapterNumber;
+
+            // Clear output and reset buttons
+            novelOutputArea.value = "";
+            setGenerationState(storyState.isGenerating);
+            
+            Swal.fire('Siap untuk Bab Baru!', `Sekarang Anda bisa mengisi detail plot untuk Bab ${storyState.currentChapterNumber} dan mulai menulis.`, 'success');
+        }
+
+        function updateChapterHistory() {
+            chapterHistoryList.innerHTML = "";
+            for (const chapterNum in storyState.chapters) {
+                const li = document.createElement('li');
+                li.textContent = `Bab ${chapterNum}`;
+                li.onclick = () => {
+                    novelOutputArea.value = storyState.chapters[chapterNum];
+                };
+                chapterHistoryList.appendChild(li);
+            }
+        }
+
+        function saveChapterToFile() {
+            const content = novelOutputArea.value;
+            if (!content) return;
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Bab ${storyState.currentChapterNumber} - Novel.txt`;
+            link.click();
+        }
+
+        // --- IMAGE GENERATOR LOGIC ---
         async function generateImage() {
             const apiKey = stabilityKeyInput.value;
             const prompt = document.getElementById('image-prompt').value;
-            const negativePrompt = document.getElementById('negative-prompt').value;
-            const stylePreset = document.getElementById('style-preset').value;
-            const resultContainer = document.getElementById('image-result');
-
-            if (!apiKey) {
-                Swal.fire('Error', 'Harap masukkan Kunci API Stability AI Anda.', 'error');
-                return;
-            }
-            if (!prompt) {
-                Swal.fire('Error', 'Prompt gambar tidak boleh kosong.', 'error');
+            if (!apiKey || !prompt) {
+                Swal.fire('Error', 'Harap masukkan Kunci API Stability dan Prompt Gambar.', 'error');
                 return;
             }
 
             Swal.fire({
                 title: 'Sedang Menghasilkan...',
-                html: 'Mohon tunggu, AI sedang melukis mahakarya Anda. <i class="fa-solid fa-spinner fa-spin"></i>',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                html: 'Mohon tunggu, AI sedang melukis... <i class="fa-solid fa-spinner fa-spin"></i>',
+                allowOutsideClick: false, didOpen: () => Swal.showLoading()
             });
 
+            const [width, height] = document.getElementById('aspect-ratio').value.split(':').reduce((acc, _, i, arr) => {
+                if(i === 0) { const base = arr[0] > arr[1] ? 1536 : 1024; const ratio = arr[1]/arr[0]; return [base, Math.round(base*ratio/64)*64]; }
+                return acc;
+            }, []);
+
             try {
-                const response = await fetch(
-                    `https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'Authorization': `Bearer ${apiKey}`
-                        },
-                        body: JSON.stringify({
-                            text_prompts: [{ text: prompt }, {text: negativePrompt, weight: -1}],
-                            cfg_scale: 7,
-                            height: 1024,
-                            width: 1024,
-                            steps: 30,
-                            samples: 1,
-                            style_preset: stylePreset,
-                        }),
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
-                }
-
-                const responseJSON = await response.json();
-                
-                Swal.close();
-                resultContainer.innerHTML = ''; // Clear previous result
-                
-                responseJSON.artifacts.forEach((image, index) => {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = `data:image/png;base64,${image.base64}`;
-                    resultContainer.appendChild(imgElement);
+                const response = await fetch(`https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({
+                        text_prompts: [{ text: prompt }, {text: document.getElementById('negative-prompt').value, weight: -1}],
+                        cfg_scale: 7, height, width, steps: 30, samples: 1,
+                        style_preset: document.getElementById('style-preset').value,
+                    }),
                 });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
+                
+                const { artifacts } = await response.json();
+                Swal.close();
+                const resultContainer = document.getElementById('image-result');
+                resultContainer.innerHTML = '';
+                
+                const base64Image = artifacts[0].base64;
+                const imgElement = document.createElement('img');
+                imgElement.src = `data:image/png;base64,${base64Image}`;
+                
+                const downloadBtn = document.createElement('a');
+                downloadBtn.href = imgElement.src;
+                downloadBtn.download = `nabila-studio-ai-image.png`;
+                downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> Download';
+                downloadBtn.className = 'btn';
+                downloadBtn.id = 'download-image-btn';
+
+                resultContainer.appendChild(imgElement);
+                resultContainer.appendChild(downloadBtn);
 
             } catch (error) {
                 console.error(error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    text: 'Gagal menghasilkan gambar. Periksa kunci API Anda dan coba lagi. Detail: ' + error.message,
-                });
+                Swal.fire('Terjadi Kesalahan', 'Gagal menghasilkan gambar. Periksa kunci API Anda. Detail: ' + error.message, 'error');
             }
         }
-
     </script>
 </body>
 </html>
