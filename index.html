@@ -3,959 +3,719 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatBox By Nabila Ahmad Studio Development - v2.0</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    <!-- SEO (Search Engine Optimization) Tags -->
+    <title>Nabila Studio Development AI - AI Content Tools</title>
+    <meta name="description" content="Nabila Studio Development AI menyediakan alat AI canggih untuk membuat prompt novel terstruktur dan menghasilkan gambar fotorealistik. Bawa kunci API Anda sendiri dan mulailah berkreasi.">
+    <meta name="keywords" content="AI, Nabila Studio, Novel Generator, Image Generator, AI Tools, Prompt Engineering, OpenAI, Stability AI, DALL-E, Stable Diffusion, Penulis, Seniman, Kecerdasan Buatan">
+    <meta name="author" content="Nabila Studio Development">
+    <meta name="robots" content="index, follow">
 
+    <!-- Favicon -->
+    <link rel="icon" href="https://img.icons8.com/fluency/48/prototyping-process.png" type="image/png">
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- SweetAlert2 for beautiful pop-ups -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
         :root {
-            --primary-color: #075E54;
-            --secondary-color: #128C7E;
-            --background-color: #ECE5DD;
-            --white-color: #FFFFFF;
-            --light-gray: #F0F0F0;
-            --dark-text: #333;
-            --chat-bubble-bg: #DCF8C6;
-            --border-color: #E0E0E0;
-            --highlight-bg: #f5f592;
+            --bg-dark: #10101a;
+            --bg-light: #1d1d2b;
+            --primary-glow: #a855f7;
+            --secondary-glow: #00e1ff;
+            --text-light: #f0f0f0;
+            --text-dark: #a0a0b0;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background-color: var(--background-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: var(--dark-text);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            background-image: radial-gradient(circle at 1% 1%, var(--primary-glow), transparent 25%),
+                              radial-gradient(circle at 99% 99%, var(--secondary-glow), transparent 25%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+            padding-top: 40px; /* Space for notification bar */
         }
 
-        .chatbox-container {
-            width: 95%;
-            max-width: 1400px;
-            height: 95vh;
-            background-color: var(--white-color);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            display: flex;
-            overflow: hidden;
-        }
-        
-        /* --- Sidebar --- */
-        .sidebar {
-            width: 30%;
-            max-width: 400px;
-            background-color: var(--white-color);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-header {
-            padding: 15px;
-            background-color: var(--light-gray);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .sidebar-header .profile-info {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .sidebar-header .profile-info img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-
-        .sidebar-header .toolbar button {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            margin-left: 15px;
-            color: #555;
-        }
-
-        .search-container {
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        #search-chat-input {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            background-color: var(--light-gray);
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .chat-list {
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-        
-        .chat-list-feedback {
-            text-align: center;
-            padding: 20px;
-            color: #888;
-        }
-
-        .chat-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s;
-        }
-
-        .chat-item:hover, .chat-item.active {
-            background-color: var(--light-gray);
-        }
-
-        .chat-item img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-
-        .chat-details {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .chat-details .name {
-            font-weight: 600;
-        }
-        
-        .chat-details .last-message {
-            color: #666;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-time {
-            font-size: 12px;
-            color: #888;
-        }
-
-        /* --- Chat Window --- */
-        .chat-window {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-repeat: repeat;
-        }
-        
-        .chat-header {
-            padding: 15px;
-            background-color: var(--light-gray);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .chat-header .room-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .chat-header .room-info img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-
-        .chat-header .room-info .room-name {
-            font-weight: 600;
-        }
-
-        .chat-header .toolbar button {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            margin-left: 15px;
-            color: #555;
-        }
-
-        #chat-options-menu {
-            display: none;
-            position: absolute;
-            top: 60px;
-            right: 15px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            overflow: hidden;
-        }
-
-        #chat-options-menu button {
-            display: block;
-            width: 100%;
-            padding: 12px 20px;
-            font-size: 15px;
-            text-align: left;
-            color: var(--dark-text);
-        }
-        #chat-options-menu button:hover {
-            background-color: var(--light-gray);
-        }
-
-        .message-container {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message-container .message-feedback {
-            align-self: center;
-            background-color: #e1f2fb;
-            color: #5a7d90;
-            padding: 8px 15px;
-            border-radius: 15px;
-            font-size: 14px;
-        }
-        
-        .message {
-            display: flex;
-            margin-bottom: 15px;
-            max-width: 70%;
-        }
-
-        .message.highlight {
-            animation: highlight-anim 2s ease-out;
-        }
-
-        @keyframes highlight-anim {
-            0% { background-color: var(--highlight-bg); }
-            100% { background-color: transparent; }
-        }
-        
-        .message.sent {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-        
-        .message.received {
-            align-self: flex-start;
-        }
-        
-        .message-bubble {
-            padding: 10px 15px;
-            border-radius: 18px;
-            position: relative;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .message.sent .message-bubble {
-            background-color: var(--chat-bubble-bg);
-            border-bottom-right-radius: 4px;
-        }
-        
-        .message.received .message-bubble {
-            background-color: var(--white-color);
-            border-bottom-left-radius: 4px;
-        }
-        
-        .message-content img.chat-item-gif {
-            width: 80px;
-            height: 80px;
-        }
-
-        .message-content img.chat-media {
-            max-width: 300px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-        
-        .message-time {
-            font-size: 11px;
-            color: gray;
-            margin-top: 5px;
-            text-align: right;
-        }
-        
-        .chat-input-area {
-            padding: 15px;
-            background-color: var(--light-gray);
-            display: flex;
-            align-items: center;
-        }
-        
-        .chat-input-area button {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            margin: 0 10px;
-            color: #555;
-        }
-
-        #message-input {
-            flex-grow: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-        }
-
-        /* --- Item/Emo Shop --- */
-        #item-shop {
-            position: absolute;
-            bottom: 80px;
-            left: 32%;
-            width: 350px;
-            background: var(--white-color);
-            border-radius: 10px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-            padding: 15px;
-            display: none;
-            flex-wrap: wrap;
-            gap: 10px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 20;
-        }
-        
-        .shop-item {
-            cursor: pointer;
-            text-align: center;
-            transition: transform 0.2s;
-        }
-
-        .shop-item:hover {
-            transform: scale(1.1);
-        }
-        
-        .shop-item img {
-            width: 48px;
-            height: 48px;
-        }
-
-        .shop-item .price {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* --- Profile Modal --- */
-        .modal {
-            display: none;
+        /* --- Notification Bar --- */
+        .notification-bar {
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            color: var(--text-light);
+            padding: 8px 0;
+            z-index: 1000;
+            font-size: 0.9em;
             text-align: center;
-        }
-        
-        .modal-content h2 {
-            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
+        .notification-bar span {
+            font-weight: 600;
+            color: var(--secondary-glow);
+        }
+        
+        .notification-bar .wa-link {
+            color: #25D366;
+            text-decoration: none;
             font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .profile-form img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin-bottom: 15px;
-            cursor: pointer;
-            object-fit: cover;
-        }
-        
-        .profile-form input[type="text"], .profile-form input[type="file"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        
-        .profile-form button {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
         }
 
-        /* Auth Screen */
-        #auth-screen {
+        /* --- Main Container --- */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(29, 29, 43, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Header --- */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5em;
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s infinite alternate;
+        }
+        
+        .header h1 i {
+            margin-right: 10px;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--primary-glow), 0 0 20px var(--secondary-glow); }
+            to { text-shadow: 0 0 20px var(--primary-glow), 0 0 30px var(--secondary-glow); }
+        }
+
+        /* --- Tab Navigation --- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            padding: 1rem 2rem;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            color: var(--text-light);
+        }
+
+        .tab-button.active {
+            color: var(--text-light);
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
             width: 100%;
-            height: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+            border-radius: 3px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: contentFadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes contentFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- Form Elements --- */
+        .form-section {
+            background-color: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-glow);
+            padding-left: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--secondary-glow);
+            box-shadow: 0 0 10px var(--secondary-glow);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2em;
+            font-weight: 700;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-glow), #ec4899);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* --- Output & Result Panes --- */
+        .output-pane, .result-pane {
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .output-pane textarea {
+            min-height: 300px;
+        }
+
+        .result-pane #image-result {
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            background-color: var(--primary-color);
-        }
-        
-        #auth-screen h1 {
-            color: var(--white-color);
-            margin-bottom: 30px;
-        }
-
-        #auth-form {
-            background: var(--white-color);
-            padding: 40px;
+            min-height: 300px;
+            border: 2px dashed var(--border-color);
             border-radius: 10px;
-            width: 350px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-
-        #auth-form input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        #auth-form button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--secondary-color);
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
         }
         
-        #auth-form button#signup-button {
-            background-color: #075E54;
+        .result-pane img {
+            max-width: 100%;
+            border-radius: 10px;
+            animation: fadeIn 0.5s;
         }
 
-        #auth-feedback {
-            margin-top: 15px;
-            color: red;
-            font-size: 14px;
-            height: 20px;
+        /* --- Floating WhatsApp Button --- */
+        .whatsapp-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
         }
 
-        #main-app {
-            display: none;
-            width: 100%;
-            height: 100%;
+        .whatsapp-fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
         }
 
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .tabs {
+                flex-direction: column;
+            }
+            .tab-button {
+                padding: 0.8rem 1rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
-        <h1>ChatBox By Nabila Ahmad Studio</h1>
-        <div id="auth-form">
-            <input type="email" id="email-input" placeholder="Email" required>
-            <input type="password" id="password-input" placeholder="Password" required>
-            <div class="auth-buttons">
-                <button id="login-button">Login</button>
-                <button id="signup-button">Sign Up</button>
-            </div>
-            <div id="auth-feedback"></div>
-        </div>
+    <!-- Notifikasi Berjalan -->
+    <div class="notification-bar">
+        <marquee behavior="scroll" direction="left" scrollamount="5">
+            ✨ Selamat datang di <span>Nabila Studio Development AI</span>! Dikembangkan dengan ❤️ oleh Nabila Ahmad. Hubungi Admin di WhatsApp: <a href="https://wa.me/6285810526151" target="_blank" class="wa-link">085810526151</a> untuk kolaborasi. ✨
+        </marquee>
     </div>
 
-    <div id="main-app">
-        <div class="chatbox-container">
-            <!-- Sidebar with Chat List -->
-            <aside class="sidebar">
-                <header class="sidebar-header">
-                    <div class="profile-info" id="user-profile-button">
-                        <img id="sidebar-avatar" src="https://img.icons8.com/material/96/user-male-circle.png" alt="Avatar">
-                        <span id="sidebar-username">User</span>
-                    </div>
-                    <div class="toolbar">
-                        <button id="add-room-btn" title="Buat Room Baru">➕</button>
-                        <button id="logout-button" title="Logout">🚪</button>
-                    </div>
-                </header>
-                <div class="search-container">
-                    <input type="text" id="search-chat-input" placeholder="Cari atau mulai chat baru">
-                </div>
-                <div class="chat-list" id="chat-list">
-                    <!-- Chat items will be dynamically inserted here -->
-                </div>
-            </aside>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fa-solid fa-brain"></i>NABILA STUDIO DEVELOPMENT AI</h1>
+        </header>
 
-            <!-- Main Chat Window -->
-            <main class="chat-window">
-                <header class="chat-header">
-                    <div class="room-info" id="current-room-info">
-                        <img id="room-avatar" src="https://img.icons8.com/fluency/96/group.png" alt="Room Avatar">
-                        <div class="room-details">
-                            <div id="room-name" class="room-name">Pilih Room untuk Memulai</div>
+        <nav class="tabs">
+            <button class="tab-button active" onclick="switchTab(event, 'novel-generator')">
+                <i class="fa-solid fa-book-sparkles"></i> Novel Prompt Generator
+            </button>
+            <button class="tab-button" onclick="switchTab(event, 'image-generator')">
+                <i class="fa-solid fa-image"></i> Image Generator
+            </button>
+        </nav>
+
+        <!-- NOVEL PROMPT GENERATOR -->
+        <div id="novel-generator" class="tab-content active">
+            <form id="novel-form">
+                <div class="form-section">
+                    <h2><i class="fa-solid fa-key"></i> Kunci API OpenAI</h2>
+                    <div class="input-group">
+                        <label for="openai-key">Masukkan Kunci API OpenAI Anda (disimpan di browser Anda saja)</label>
+                        <input type="password" id="openai-key" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><i class="fa-solid fa-feather-pointed"></i> Detail Dasar</h2>
+                    <div class="grid">
+                        <div class="input-group">
+                            <label for="author">Nama Penulis (Author)</label>
+                            <input type="text" id="author" placeholder="Contoh: Andrea Hirata">
+                        </div>
+                        <div class="input-group">
+                            <label for="genre">Genre Cerita</label>
+                            <input type="text" id="genre" placeholder="Contoh: Fantasi, Sains Fiksi, Roman Sejarah">
                         </div>
                     </div>
-                    <div class="toolbar">
-                         <button id="search-messages-btn" title="Search Messages">🔍</button>
-                         <button id="more-options-btn" title="More">⋮</button>
-                    </div>
-                    <div id="chat-options-menu">
-                        <button id="room-details-btn">Room Details</button>
-                        <button id="leave-room-btn">Leave Room</button>
-                    </div>
-                </header>
-                <div class="message-container" id="message-container">
-                    <!-- Messages will be dynamically inserted here -->
                 </div>
-                <div class="chat-input-area">
-                    <button id="item-shop-button" title="Kirim Item">🎁</button>
-                    <button id="upload-media-button" title="Unggah Media">📎</button>
-                    <input type="file" id="media-file-input" style="display: none;" accept="image/*,video/*">
 
-                    <input type="text" id="message-input" placeholder="Ketik pesan...">
-                    <button id="send-button" title="Kirim">➤</button>
+                <div class="form-section">
+                    <h2><i class="fa-solid fa-users"></i> Karakterisasi</h2>
+                    <div class="grid">
+                        <div class="input-group">
+                            <label for="protagonist">Karakter Protagonis</label>
+                            <textarea id="protagonist" placeholder="Jelaskan karakter utama, motivasi, dan kelemahannya."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="antagonist">Karakter Antagonis</label>
+                            <textarea id="antagonist" placeholder="Jelaskan penentang utama, tujuan, dan metodenya."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="foil">Karakter Foil</label>
+                            <textarea id="foil" placeholder="Jelaskan karakter yang menjadi kontras bagi protagonis untuk menonjolkan sifatnya."></textarea>
+                        </div>
+                    </div>
+                     <div class="input-group">
+                        <label for="other-chars">Karakter Pendukung Lainnya (1-10)</label>
+                        <textarea id="other-chars" placeholder="Pisahkan dengan baris baru. Contoh:
+Budi: Sahabat setia protagonis yang bijaksana.
+Citra: Ilmuwan misterius dengan agenda tersembunyi."></textarea>
+                    </div>
                 </div>
-            </main>
-        </div>
 
-        <!-- Item/Emo Shop Popup -->
-        <div id="item-shop">
-            <!-- Items will be dynamically loaded here -->
-        </div>
-    </div>
+                 <div class="form-section">
+                    <h2><i class="fa-solid fa-map-location-dot"></i> Latar Cerita</h2>
+                    <div class="input-group">
+                        <label for="setting">Setting Tempat dan Waktu</label>
+                        <textarea id="setting" placeholder="Contoh: Sebuah kota bawah tanah di tahun 2300, pasca-apokaliptik, di mana teknologi kuno bercampur dengan sihir."></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2><i class="fa-solid fa-book-open-reader"></i> Struktur Narasi & Plot</h2>
+                    <div class="grid">
+                        <div class="input-group">
+                            <label for="conflict-bg">Latar Belakang Konflik</label>
+                            <textarea id="conflict-bg" placeholder="Peristiwa masa lalu yang memicu konflik utama cerita."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="conflict">Konflik Utama Bab Ini</label>
+                            <textarea id="conflict" placeholder="Tantangan spesifik yang harus dihadapi karakter dalam bab ini."></textarea>
+                        </div>
+                         <div class="input-group">
+                            <label for="climax">Klimaks Bab Ini</label>
+                            <textarea id="climax" placeholder="Puncak ketegangan atau titik balik dalam bab ini."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="plot-twist">Plot Twist (Jika Ada)</label>
+                            <input type="text" id="plot-twist" placeholder="Kejutan tak terduga dalam cerita.">
+                        </div>
+                        <div class="input-group">
+                            <label for="resolution">Resolusi Bab Ini</label>
+                            <textarea id="resolution" placeholder="Bagaimana konflik dalam bab ini terselesaikan (atau berkembang menjadi masalah baru)."></textarea>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Profile Edit Modal -->
-    <div id="profile-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">×</span>
-            <h2>Edit Profil</h2>
-            <form class="profile-form" id="profile-form">
-                <label for="avatar-file-input">
-                    <img id="profile-modal-avatar" src="https://img.icons8.com/material/96/user-male-circle.png" alt="Avatar">
-                </label>
-                <input type="file" id="avatar-file-input" style="display: none;" accept="image/*">
-                <input type="text" id="username-input" placeholder="Nama Pengguna" required>
-                <button type="submit">Simpan Perubahan</button>
+                <div class="form-section">
+                    <h2><i class="fa-solid fa-chart-line"></i> Pengembangan</h2>
+                    <div class="grid">
+                        <div class="input-group">
+                            <label for="char-dev">Pengembangan Karakter</label>
+                            <textarea id="char-dev" placeholder="Bagaimana karakter (terutama protagonis) berubah atau belajar sesuatu di bab ini?"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="story-dev">Pengembangan Cerita</label>
+                            <textarea id="story-dev" placeholder="Bagaimana bab ini memajukan plot utama cerita secara keseluruhan?"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Buat Prompt Novel!</button>
             </form>
+
+            <div class="output-pane">
+                <h2><i class="fa-solid fa-paste"></i> Prompt Siap Pakai</h2>
+                <textarea id="novel-output" readonly placeholder="Prompt yang dihasilkan akan muncul di sini..."></textarea>
+                <button class="btn" style="background: #333; color: white; margin-top: 1rem;" onclick="copyToClipboard('novel-output')"><i class="fa-solid fa-copy"></i> Salin Prompt</button>
+            </div>
+        </div>
+
+        <!-- IMAGE GENERATOR -->
+        <div id="image-generator" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fa-solid fa-key"></i> Kunci API Stability AI</h2>
+                <div class="input-group">
+                    <label for="stability-key">Masukkan Kunci API Stability AI Anda (disimpan di browser Anda saja)</label>
+                    <input type="password" id="stability-key" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx" required>
+                </div>
+            </div>
+            <div class="form-section">
+                <h2><i class="fa-solid fa-paint-brush"></i> Deskripsi Gambar</h2>
+                 <div class="input-group">
+                    <label for="image-prompt">Prompt Utama</label>
+                    <textarea id="image-prompt" placeholder="Contoh: A hyper-detailed photorealistic portrait of a female cyborg in a neon-lit cyberpunk city, rain-slicked streets, cinematic lighting, 8k"></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="negative-prompt">Prompt Negatif (Hal yang tidak diinginkan)</label>
+                    <input type="text" id="negative-prompt" placeholder="Contoh: blurry, ugly, deformed, text, watermark">
+                </div>
+                 <div class="input-group">
+                    <label for="style-preset">Gaya Artistik</label>
+                    <select id="style-preset">
+                        <option value="photographic">Fotografi</option>
+                        <option value="cinematic">Sinematik</option>
+                        <option value="anime">Anime</option>
+                        <option value="fantasy-art">Seni Fantasi</option>
+                        <option value="comic-book">Buku Komik</option>
+                        <option value="digital-art">Seni Digital</option>
+                        <option value="3d-model">Model 3D</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="generateImage()"><i class="fa-solid fa-camera-retro"></i> Hasilkan Gambar!</button>
+            
+            <div class="result-pane">
+                 <h2><i class="fa-solid fa-image"></i> Hasil Gambar</h2>
+                 <div id="image-result">
+                     <p>Gambar yang dihasilkan akan muncul di sini.</p>
+                 </div>
+            </div>
         </div>
     </div>
-    
+
+    <!-- Tombol Hubungi Admin WhatsApp -->
+    <a href="https://wa.me/6285810526151?text=Halo%20Admin%20Nabila%20Studio%20Development,%20saya%20tertarik%20dengan%20layanan%20AI%20Anda." target="_blank" class="whatsapp-fab">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <script>
-        // --- KONFIGURASI SUPABASE (FIXED!) ---
-        const SUPABASE_URL = 'https://pjannfbzbongxxnyiowu.supabase.co'; // FIX: Menghapus 'Y' yang salah
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqYW5uZmJ6Ym9uZ3h4bnlpb3d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyMTI5NzMsImV4cCI6MjA2Nzc4ODk3M30.3grDy54FX6bm3wQ_p9gYTQ7R1p1eGGYqyoLV01eUw0I';
-        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Save and load API keys from localStorage
+        const openaiKeyInput = document.getElementById('openai-key');
+        const stabilityKeyInput = document.getElementById('stability-key');
 
-        // --- ASET ITEM/EMO (Tidak Berubah) ---
-        const chatItems = [
-            { name: "Boxing Glove", price: 50, url: "https://img.icons8.com/emoji/48/boxing-glove-emoji.png" }, { name: "Badminton", price: 20, url: "https://img.icons8.com/emoji/48/badminton-emoji.png" }, { name: "Bullseye", price: 100, url: "https://img.icons8.com/emoji/48/bullseye.png" }, { name: "Chess Pawn", price: 75, url: "https://img.icons8.com/emoji/48/chess-pawn.png" }, { name: "Japanese Dolls", price: 500, url: "https://img.icons8.com/emoji/48/japanese-dolls.png" }, { name: "Kite", price: 1000, url: "https://img.icons8.com/emoji/48/kite-.png" }, { name: "Nesting Dolls", price: 2000, url: "https://img.icons8.com/emoji/48/nesting-dolls.png" }, { name: "Teddy Bear", price: 3000, url: "https://img.icons8.com/emoji/48/teddy-bear-.png" }, { name: "Ant", price: 5000, url: "https://img.icons8.com/emoji/48/ant-emoji.png" }, { name: "Butterfly", price: 7000, url: "https://img.icons8.com/emoji/48/butterfly-emoji.png" }, { name: "Dog Face", price: 9000, url: "https://img.icons8.com/emoji/48/dog-face.png" }, { name: "Elephant", price: 10000, url: "https://img.icons8.com/emoji/48/elephant-emoji.png" }, { name: "Ewe", price: 12000, url: "https://img.icons8.com/emoji/48/ewe-emoji.png" }, { name: "Fly", price: 3000, url: "https://img.icons8.com/emoji/48/fly-emoji.png" }, { name: "Fox", price: 15000, url: "https://img.icons8.com/emoji/48/fox-emoji.png" }, { name: "Goat", price: 7000, url: "https://img.icons8.com/emoji/48/goat-emoji.png" }, { name: "Gorilla", price: 25000, url: "https://img.icons8.com/emoji/48/gorilla-emoji.png" }, { name: "Hatching Chick", price: 75000, url: "https://img.icons8.com/emoji/48/hatching-chick--v2.png" }, { name: "Hibiscus", price: 20000, url: "https://img.icons8.com/emoji/48/hibiscus.png" }, { name: "Kangaroo", price: 6000, url: "https://img.icons8.com/emoji/48/kangaroo-emoji.png" }, { name: "Lotus", price: 1000, url: "https://img.icons8.com/emoji/48/lotus-emoji.png" }, { name: "Monkey", price: 50000, url: "https://img.icons8.com/emoji/48/monkey--v1.png" }, { name: "Mouse", price: 15000, url: "https://img.icons8.com/emoji/48/mouse-body-emoji.png" }, { name: "Parrot", price: 3000, url: "https://img.icons8.com/emoji/48/parrot-emoji.png" }, { name: "Penguin", price: 30000, url: "https://img.icons8.com/emoji/48/penguin--v2.png" }, { name: "Pig", price: 100000, url: "https://img.icons8.com/emoji/48/pig-emoji.png" }, { name: "Rose", price: 2000, url: "https://img.icons8.com/emoji/48/rose-emoji.png" }, { name: "Sauropod", price: 5000, url: "https://img.icons8.com/emoji/48/sauropod.png" },
-        ];
-        
-        // --- State Aplikasi ---
-        let currentUser = null;
-        let currentRoomId = null;
-        let currentRoomDetails = null;
-        let messageSubscription = null;
+        openaiKeyInput.value = localStorage.getItem('openaiApiKey') || '';
+        stabilityKeyInput.value = localStorage.getItem('stabilityApiKey') || '';
 
-        // --- Elemen DOM ---
-        const authScreen = document.getElementById('auth-screen');
-        const mainApp = document.getElementById('main-app');
-        const loginButton = document.getElementById('login-button');
-        const signupButton = document.getElementById('signup-button');
-        const logoutButton = document.getElementById('logout-button');
-        const authFeedback = document.getElementById('auth-feedback');
-        const messageContainer = document.getElementById('message-container');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const userProfileButton = document.getElementById('user-profile-button');
-        const profileModal = document.getElementById('profile-modal');
-        const closeModalBtn = document.querySelector('.close-btn');
-        const profileForm = document.getElementById('profile-form');
-        const chatList = document.getElementById('chat-list');
-        const addRoomBtn = document.getElementById('add-room-btn');
-        const itemShopButton = document.getElementById('item-shop-button');
-        const itemShop = document.getElementById('item-shop');
-        const uploadMediaButton = document.getElementById('upload-media-button');
-        const mediaFileInput = document.getElementById('media-file-input');
-        const searchChatInput = document.getElementById('search-chat-input');
-        const searchMessagesBtn = document.getElementById('search-messages-btn');
-        const moreOptionsBtn = document.getElementById('more-options-btn');
-        const chatOptionsMenu = document.getElementById('chat-options-menu');
-        const roomDetailsBtn = document.getElementById('room-details-btn');
-        const leaveRoomBtn = document.getElementById('leave-room-btn');
-        
-        // --- Fungsi Utama ---
-        document.addEventListener('DOMContentLoaded', () => {
-            sb.auth.onAuthStateChange((_event, session) => {
-                handleAuth(session);
-            });
-            // Cek sesi awal secara manual untuk mempercepat pemuatan UI
-            sb.auth.getSession().then(({ data: { session } }) => {
-                handleAuth(session);
+        openaiKeyInput.addEventListener('change', (e) => localStorage.setItem('openaiApiKey', e.target.value));
+        stabilityKeyInput.addEventListener('change', (e) => localStorage.setItem('stabilityApiKey', e.target.value));
+
+        // Tab switching logic
+        function switchTab(event, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove('active');
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove('active');
+            }
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Novel Prompt Generation Logic
+        document.getElementById('novel-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Check if OpenAI key is present
+            if (!openaiKeyInput.value) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Harap masukkan Kunci API OpenAI Anda terlebih dahulu!',
+                });
+                return;
+            }
+
+            const author = document.getElementById('author').value;
+            const genre = document.getElementById('genre').value;
+            const protagonist = document.getElementById('protagonist').value;
+            const antagonist = document.getElementById('antagonist').value;
+            const foil = document.getElementById('foil').value;
+            const otherChars = document.getElementById('other-chars').value;
+            const setting = document.getElementById('setting').value;
+            const conflictBg = document.getElementById('conflict-bg').value;
+            const conflict = document.getElementById('conflict').value;
+            const climax = document.getElementById('climax').value;
+            const plotTwist = document.getElementById('plot-twist').value;
+            const resolution = document.getElementById('resolution').value;
+            const charDev = document.getElementById('char-dev').value;
+            const storyDev = document.getElementById('story-dev').value;
+
+            const finalPrompt = `
+# PROMPT UNTUK PENULISAN BAB NOVEL
+
+**TARGET KATA: 6000-7000 KATA**
+
+Anda adalah seorang penulis sastra ahli bernama ${author || 'anonim'}. Tugas Anda adalah menulis sebuah bab novel yang kaya dan mendalam. Ikuti semua instruksi di bawah ini dengan presisi tinggi untuk menghasilkan sebuah karya sastra yang imersif.
+
+---
+
+### **A. KONTEKS KESELURUHAN**
+- **Genre:** ${genre || 'Tidak ditentukan'}
+- **Setting Utama:** ${setting || 'Tidak ditentukan'}
+
+### **B. FOKUS BAB INI**
+Tuliskan sebuah bab lengkap berdasarkan plot dan pengembangan karakter berikut:
+
+1.  **Latar Belakang Konflik:**
+    \`\`\`
+    ${conflictBg || 'Tidak ditentukan'}
+    \`\`\`
+
+2.  **Konflik Utama Bab Ini:**
+    \`\`\`
+    ${conflict || 'Wajib diisi'}
+    \`\`\`
+
+3.  **Klimaks Bab Ini:**
+    \`\`\`
+    ${climax || 'Wajib diisi'}
+    \`\`\`
+
+4.  **Plot Twist (jika ada):**
+    \`\`\`
+    ${plotTwist || 'Tidak ada'}
+    \`\`\`
+
+5.  **Resolusi dan Konsekuensi Bab Ini:**
+    \`\`\`
+    ${resolution || 'Wajib diisi'}
+    \`\`\`
+
+### **C. PENGEMBANGAN CERITA & KARAKTER**
+- **Pengembangan Alur Cerita Utama:** ${storyDev || 'Jelaskan bagaimana bab ini memajukan plot global.'}
+- **Pengembangan Karakter Utama:** ${charDev || 'Jelaskan bagaimana karakter utama bertumbuh atau berubah di bab ini.'}
+
+### **D. PANDUAN PENULISAN & GAYA SASTRA (WAJIB DIIKUTI)**
+- **Kaidah Sastra:** Terapkan kaidah sastra tingkat tinggi. Gunakan puitisme dan prosa liris dalam deskripsi, ciptakan dialog yang natural namun penuh makna, dan bangun narasi yang mengalir.
+- **Simbolisme:** Integrasikan simbolisme yang relevan dengan tema cerita. Setiap objek atau kejadian penting harus memiliki lapisan makna yang lebih dalam.
+- **Show, Don't Tell:** Alih-alih memberitahu emosi atau keadaan, tunjukkan melalui tindakan, dialog, dan deskripsi sensorik (pancaindera).
+- **Struktur Kalimat:** Variasikan panjang dan struktur kalimat untuk menciptakan ritme narasi yang dinamis.
+- **Dialog:** Dialog harus mencerminkan kepribadian setiap karakter, memajukan plot, dan mengungkapkan informasi penting secara subtil.
+- **Narasi:** Bangun narasi yang seimbang antara aksi, deskripsi, dialog, dan monolog internal karakter.
+
+### **E. KARAKTER YANG TERLIBAT DI BAB INI**
+- **Protagonis:** ${protagonist || 'Wajib diisi'}
+- **Antagonis:** ${antagonist || 'Wajib diisi'}
+- **Karakter Foil:** ${foil || 'Wajib diisi'}
+- **Karakter Pendukung Lainnya:**
+${otherChars || 'Tidak ada'}
+
+---
+
+Mulai tulis bab novelnya sekarang.
+            `;
+            
+            document.getElementById('novel-output').value = finalPrompt.trim();
+            Swal.fire({
+                icon: 'success',
+                title: 'Prompt Dibuat!',
+                text: 'Prompt novel Anda telah berhasil dibuat. Salin dan gunakan pada platform AI favorit Anda.',
             });
         });
-        
-        function handleAuth(session) {
-            if (session) {
-                currentUser = session.user;
-                setupApp();
-            } else {
-                currentUser = null;
-                showAuthScreen();
+
+        // Copy to clipboard helper
+        function copyToClipboard(elementId) {
+            const textarea = document.getElementById(elementId);
+            if (!textarea.value) {
+                 Swal.fire('Oops!', 'Tidak ada yang bisa disalin.', 'warning');
+                 return;
             }
+            textarea.select();
+            document.execCommand('copy');
+            Swal.fire('Tersalin!', 'Prompt telah disalin ke clipboard.', 'success');
         }
 
-        async function setupApp() {
-            authScreen.style.display = 'none';
-            mainApp.style.display = 'flex';
-            await loadUserProfile();
-            await loadRooms();
-            loadItemShop();
-            initializeEventListeners();
-        }
+        // Image Generation Logic
+        async function generateImage() {
+            const apiKey = stabilityKeyInput.value;
+            const prompt = document.getElementById('image-prompt').value;
+            const negativePrompt = document.getElementById('negative-prompt').value;
+            const stylePreset = document.getElementById('style-preset').value;
+            const resultContainer = document.getElementById('image-result');
 
-        function showAuthScreen() {
-            mainApp.style.display = 'none';
-            authScreen.style.display = 'flex';
-        }
-
-        function setAuthFeedback(message, isError = true) {
-            authFeedback.textContent = message;
-            authFeedback.style.color = isError ? 'red' : 'green';
-        }
-
-        async function loadUserProfile() {
-            if (!currentUser) return;
-            const { data, error } = await sb.from('profiles').select('username, avatar_url').eq('id', currentUser.id).single();
-            if (data) {
-                document.getElementById('sidebar-username').textContent = data.username || 'User';
-                document.getElementById('username-input').value = data.username || '';
-                const avatarUrl = data.avatar_url ? getPublicUrl('avatars', data.avatar_url) : 'https://img.icons8.com/material/96/user-male-circle.png';
-                document.getElementById('sidebar-avatar').src = avatarUrl;
-                document.getElementById('profile-modal-avatar').src = avatarUrl;
-            } else if (error && error.code === 'PGRST116') {
-                const { error: insertError } = await sb.from('profiles').insert({ id: currentUser.id, username: 'New User (Edit me!)' });
-                if (!insertError) await loadUserProfile();
-            }
-        }
-
-        async function loadRooms() {
-            chatList.innerHTML = `<div class="chat-list-feedback">Memuat room...</div>`;
-            const { data: rooms, error } = await sb.from('rooms').select('*');
-            if (error) {
-                console.error("Error loading rooms:", error);
-                chatList.innerHTML = `<div class="chat-list-feedback">Gagal memuat room.</div>`;
+            if (!apiKey) {
+                Swal.fire('Error', 'Harap masukkan Kunci API Stability AI Anda.', 'error');
                 return;
             }
-            if (rooms.length === 0) {
-                chatList.innerHTML = `<div class="chat-list-feedback">Belum ada room. Buat satu!</div>`;
+            if (!prompt) {
+                Swal.fire('Error', 'Prompt gambar tidak boleh kosong.', 'error');
                 return;
             }
-            chatList.innerHTML = '';
-            rooms.forEach(room => {
-                const roomElement = document.createElement('div');
-                roomElement.className = 'chat-item';
-                roomElement.dataset.roomId = room.id;
-                roomElement.innerHTML = `
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(room.name)}&background=random" alt="Room Avatar">
-                    <div class="chat-details">
-                        <div class="name">${room.name}</div>
-                        <div class="last-message">Klik untuk bergabung...</div>
-                    </div>`;
-                roomElement.addEventListener('click', () => joinRoom(room));
-                chatList.appendChild(roomElement);
+
+            Swal.fire({
+                title: 'Sedang Menghasilkan...',
+                html: 'Mohon tunggu, AI sedang melukis mahakarya Anda. <i class="fa-solid fa-spinner fa-spin"></i>',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
-        }
-        
-        async function joinRoom(room) {
-            if (currentRoomId === room.id) return;
-            
-            currentRoomId = room.id;
-            currentRoomDetails = room;
 
-            document.querySelectorAll('.chat-item.active').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.chat-item[data-room-id="${room.id}"]`).classList.add('active');
-
-            document.getElementById('room-name').textContent = room.name;
-            document.getElementById('room-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(room.name)}&background=random`;
-            messageContainer.innerHTML = `<div class="message-feedback">Memuat pesan...</div>`;
-
-            await loadMessages(room.id);
-
-            if (messageSubscription) messageSubscription.unsubscribe();
-            
-            messageSubscription = sb.channel(`room_${room.id}`)
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${room.id}` }, 
-                    async (payload) => {
-                        const { data: profile } = await sb.from('profiles').select('username, avatar_url').eq('id', payload.new.user_id).single();
-                        displayMessage(payload.new, profile);
+            try {
+                const response = await fetch(
+                    `https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            text_prompts: [{ text: prompt }, {text: negativePrompt, weight: -1}],
+                            cfg_scale: 7,
+                            height: 1024,
+                            width: 1024,
+                            steps: 30,
+                            samples: 1,
+                            style_preset: stylePreset,
+                        }),
                     }
-                ).subscribe();
-        }
+                );
 
-        async function loadMessages(roomId) {
-             const { data: messages, error } = await sb.from('messages').select(`*, profile:profiles(username, avatar_url)`).eq('room_id', roomId).order('created_at', { ascending: true });
-            if (error) {
-                messageContainer.innerHTML = `<div class="message-feedback">Gagal memuat pesan.</div>`;
-                return;
-            }
-            
-            messageContainer.innerHTML = '';
-            if (messages.length === 0) {
-                 messageContainer.innerHTML = `<div class="message-feedback">Jadilah yang pertama mengirim pesan!</div>`;
-            } else {
-                messages.forEach(msg => displayMessage(msg, msg.profile));
-            }
-        }
-
-        function displayMessage(message, profile) {
-            const feedback = messageContainer.querySelector('.message-feedback');
-            if (feedback) feedback.remove();
-
-            const msgDiv = document.createElement('div');
-            const isSent = message.user_id === currentUser.id;
-            msgDiv.className = `message ${isSent ? 'sent' : 'received'}`;
-            
-            const avatarUrl = profile.avatar_url ? getPublicUrl('avatars', profile.avatar_url) : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username || 'U')}`;
-            let contentHTML = '';
-
-            if (message.content) {
-                contentHTML = `<p>${message.content.replace(/</g, "<").replace(/>/g, ">")}</p>`;
-            } else if (message.item_url) {
-                contentHTML = `<div class="message-content">
-                    <img src="${message.item_url}" class="chat-item-gif" alt="Chat Item">
-                    <p class="price">Rp. ${message.item_price.toLocaleString()}</p>
-                </div>`;
-            } else if(message.media_url) {
-                const mediaUrl = getPublicUrl('media', message.media_url);
-                 contentHTML = `<img src="${mediaUrl}" class="chat-media" alt="Media" onclick="window.open('${mediaUrl}', '_blank')">`;
-            }
-
-            msgDiv.innerHTML = `
-                <div class="message-bubble">
-                    ${!isSent ? `<div class="sender-name" style="font-weight:bold; color: var(--secondary-color);">${profile.username || 'User'}</div>` : ''}
-                    ${contentHTML}
-                    <div class="message-time">${new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                </div>
-            `;
-            messageContainer.appendChild(msgDiv);
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        }
-
-        async function sendMessage() {
-            const content = messageInput.value.trim();
-            if (!content || !currentRoomId) return;
-            messageInput.value = '';
-            const { error } = await sb.from('messages').insert({ content: content, user_id: currentUser.id, room_id: currentRoomId });
-            if (error) console.error('Error sending message:', error);
-        }
-        
-        async function sendItem(item) {
-             if (!currentRoomId) { alert("Pilih room terlebih dahulu!"); return; }
-             itemShop.style.display = 'none';
-             const { error } = await sb.from('messages').insert({ user_id: currentUser.id, room_id: currentRoomId, item_url: item.url, item_price: item.price });
-             if (error) console.error('Error sending item:', error);
-        }
-
-        function loadItemShop() {
-            itemShop.innerHTML = '';
-            chatItems.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'shop-item';
-                itemDiv.innerHTML = `<img src="${item.url}" alt="${item.name}"><div class="price">Rp. ${item.price.toLocaleString()}</div>`;
-                itemDiv.onclick = () => sendItem(item);
-                itemShop.appendChild(itemDiv);
-            });
-        }
-        
-        function getPublicUrl(bucket, path) {
-            const { data } = sb.storage.from(bucket).getPublicUrl(path);
-            return data.publicUrl;
-        }
-        
-        // --- Event Listeners Diinisialisasi Sekali ---
-        function initializeEventListeners() {
-            loginButton.addEventListener('click', handleLogin);
-            signupButton.addEventListener('click', handleSignup);
-            logoutButton.addEventListener('click', () => sb.auth.signOut());
-            sendButton.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-            userProfileButton.addEventListener('click', () => profileModal.style.display = 'flex');
-            closeModalBtn.addEventListener('click', () => profileModal.style.display = 'none');
-            profileForm.addEventListener('submit', handleProfileUpdate);
-            addRoomBtn.addEventListener('click', handleAddRoom);
-            itemShopButton.addEventListener('click', () => { itemShop.style.display = itemShop.style.display === 'flex' ? 'none' : 'flex'; });
-            uploadMediaButton.addEventListener('click', () => mediaFileInput.click());
-            mediaFileInput.addEventListener('change', handleMediaUpload);
-            
-            // --- Fitur Baru ---
-            searchChatInput.addEventListener('input', handleChatSearch);
-            searchMessagesBtn.addEventListener('click', handleMessageSearch);
-            moreOptionsBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Mencegah window click listener tertutup langsung
-                chatOptionsMenu.style.display = chatOptionsMenu.style.display === 'block' ? 'none' : 'block';
-            });
-            roomDetailsBtn.addEventListener('click', showRoomDetails);
-            leaveRoomBtn.addEventListener('click', () => alert('Fitur "Leave Room" sedang dalam pengembangan!'));
-            
-            // Menutup menu jika klik di luar
-            window.addEventListener('click', () => {
-                if (chatOptionsMenu.style.display === 'block') {
-                    chatOptionsMenu.style.display = 'none';
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
                 }
-            });
-        }
 
-        // --- Handler untuk Event Listeners ---
-        async function handleLogin() {
-            setAuthFeedback('');
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('password-input').value;
-            const { error } = await sb.auth.signInWithPassword({ email, password });
-            if (error) setAuthFeedback(error.message);
-        }
+                const responseJSON = await response.json();
+                
+                Swal.close();
+                resultContainer.innerHTML = ''; // Clear previous result
+                
+                responseJSON.artifacts.forEach((image, index) => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = `data:image/png;base64,${image.base64}`;
+                    resultContainer.appendChild(imgElement);
+                });
 
-        async function handleSignup() {
-            setAuthFeedback('');
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('password-input').value;
-            const { data, error } = await sb.auth.signUp({ email, password });
-            if (error) {
-                setAuthFeedback(error.message);
-            } else if (data.user && data.user.identities && data.user.identities.length === 0) {
-                setAuthFeedback("Pengguna dengan email ini sudah ada.", true);
-            } else if (data.user) {
-                setAuthFeedback('Akun berhasil dibuat! Cek email untuk verifikasi.', false);
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: 'Gagal menghasilkan gambar. Periksa kunci API Anda dan coba lagi. Detail: ' + error.message,
+                });
             }
-        }
-
-        async function handleProfileUpdate(e) {
-            e.preventDefault();
-            const newUsername = document.getElementById('username-input').value;
-            const avatarFile = document.getElementById('avatar-file-input').files[0];
-            let avatar_url = null;
-            if (avatarFile) {
-                const filePath = `${currentUser.id}/${Date.now()}_${avatarFile.name}`;
-                const { error: uploadError } = await sb.storage.from('avatars').upload(filePath, avatarFile);
-                if (uploadError) { alert('Gagal mengunggah avatar!'); console.error(uploadError); } 
-                else { avatar_url = filePath; }
-            }
-            const updates = { id: currentUser.id, username: newUsername, updated_at: new Date() };
-            if(avatar_url) updates.avatar_url = avatar_url;
-            const { error } = await sb.from('profiles').upsert(updates);
-            if(error) { alert('Gagal memperbarui profil!'); console.error(error); } 
-            else { alert('Profil berhasil diperbarui!'); profileModal.style.display = 'none'; await loadUserProfile(); }
-        }
-
-        async function handleAddRoom() {
-            const roomName = prompt("Masukkan nama room baru:");
-            if(roomName && roomName.trim() !== '') {
-                const { error } = await sb.from('rooms').insert({ name: roomName, created_by: currentUser.id });
-                if (error) { console.error('Gagal membuat room:', error); } 
-                else { alert('Room berhasil dibuat!'); await loadRooms(); }
-            }
-        }
-
-        async function handleMediaUpload(e) {
-            const file = e.target.files[0];
-            if (!file || !currentRoomId) return;
-            const filePath = `${currentUser.id}/${currentRoomId}/${Date.now()}_${file.name}`;
-            const { error: uploadError } = await sb.storage.from('media').upload(filePath, file);
-            if (uploadError) {
-                alert('Gagal mengunggah media!'); console.error(uploadError);
-            } else {
-                const { error: msgError } = await sb.from('messages').insert({ user_id: currentUser.id, room_id: currentRoomId, media_url: filePath });
-                if(msgError) console.error("Error sending media message:", msgError);
-            }
-            mediaFileInput.value = '';
-        }
-        
-        // --- LOGIKA FITUR BARU ---
-        function handleChatSearch(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const allChats = document.querySelectorAll('.chat-item');
-            allChats.forEach(chat => {
-                const chatName = chat.querySelector('.name').textContent.toLowerCase();
-                if (chatName.includes(searchTerm)) {
-                    chat.style.display = 'flex';
-                } else {
-                    chat.style.display = 'none';
-                }
-            });
-        }
-        
-        function handleMessageSearch() {
-            if (!currentRoomId) return;
-            const searchTerm = prompt("Cari pesan dalam room ini:").toLowerCase();
-            if (!searchTerm) return;
-            
-            const allMessages = document.querySelectorAll('.message-container .message');
-            let foundCount = 0;
-            allMessages.forEach(msg => {
-                msg.classList.remove('highlight');
-                const content = msg.textContent.toLowerCase();
-                if (content.includes(searchTerm)) {
-                    foundCount++;
-                    msg.classList.add('highlight');
-                    // Scroll ke pesan pertama yang ditemukan
-                    if (foundCount === 1) {
-                         msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }
-            });
-            alert(`${foundCount} pesan ditemukan.`);
-        }
-
-        function showRoomDetails() {
-            chatOptionsMenu.style.display = 'none';
-            if (!currentRoomDetails) return;
-            alert(`Detail Room:\n\nNama: ${currentRoomDetails.name}\nID: ${currentRoomDetails.id}\nDibuat pada: ${new Date(currentRoomDetails.created_at).toLocaleString()}`);
         }
 
     </script>
 </body>
-    </html>
+</html>
